@@ -1,1 +1,7 @@
-### Test study
+---
+
+title: Test study
+
+---
+
+The study
