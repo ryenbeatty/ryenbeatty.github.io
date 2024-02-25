@@ -1,0 +1,79 @@
+:root {
+  --step--2: clamp(0.7813rem, 0.7747rem + 0.0326vi, 0.8rem);
+  --step--1: clamp(0.9375rem, 0.9158rem + 0.1087vi, 1rem);
+  --step-0: clamp(1.125rem, 1.0815rem + 0.2174vi, 1.25rem);
+  --step-1: clamp(1.35rem, 1.2761rem + 0.3696vi, 1.5625rem);
+  --step-2: clamp(1.62rem, 1.5041rem + 0.5793vi, 1.9531rem);
+  --step-3: clamp(1.944rem, 1.771rem + 0.8651vi, 2.4414rem);
+  --step-4: clamp(2.3328rem, 2.0827rem + 1.2504vi, 3.0518rem);
+  --step-5: clamp(2.7994rem, 2.4462rem + 1.7658vi, 3.8147rem);
+}
+
+html {
+  font-family:
+    system,
+    -apple-system,
+    '.SFNSText-Regular',
+    'San Francisco',
+    'Roboto',
+    'Segoe UI',
+    'Helvetica Neue',
+    'Lucida Grande',
+    sans-serif;
+
+  font-weight: 400;
+  font-style: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  color: #111;
+}
+
+body {
+  line-height: 1.5;
+}
+
+code {
+  font-family: Consolas, 'Andale Mono WT', 'Andale Mono', 'Lucida Console',
+    'Lucida Sans Typewriter', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
+    'Liberation Mono', 'Nimbus Mono L', Monaco, 'Courier New', Courier,
+    monospace;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0.6em 0;
+  font-weight: normal;
+}
+
+h1,
+.h1 {
+  --font-size: var(--step-5);
+  font-size: var(--step-5);
+}
+
+h2,
+.h2 {
+  --font-size: var(--step-4);
+  font-size: var(--step-4);
+}
+
+h3,
+.h3 {
+  --font-size: var(--step-3);
+  font-size: var(--step-3);
+}
+
+h4,
+.h4 {
+  --font-size: var(--step-2);
+  font-size: var(--step-2);
+}
+
+p {
+  --font-size: var(--step--1);
+  font-size: var(--step--1);
+}

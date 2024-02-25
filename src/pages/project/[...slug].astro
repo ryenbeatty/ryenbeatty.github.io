@@ -1,18 +1,23 @@
 ---
+import Layout from 'layouts/BaseLayout.astro'
 
-import { getCollection } from 'astro:content';
+import { getCollection } from 'astro:content'
 
 export async function getStaticPaths() {
-  const content = await getCollection('project');
-  return content.map(entry => ({
-    params: { slug: entry.slug }, props: { entry },
-  }));
+  const content = await getCollection('project')
+  return content.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }))
 }
-// 2. For your template, you can get the entry directly from the prop
-const { entry } = Astro.props;
-const { Content } = await entry.render();
 
+const { entry } = Astro.props
+const { Content } = await entry.render()
 ---
 
-<h1>{entry.data.title}</h1>
-<Content />
+<Layout>
+  <p>project layout</p>
+  <a href="/">All projects</a>
+  <h1>{entry.data.title}</h1>
+  <Content />
+</Layout>

@@ -1,0 +1,27 @@
+---
+import Navigation from './Navigation.astro'
+import ThemeToggle from './ThemeToggle.svelte'
+---
+
+<header>
+  <h3>Ryen Beatty</h3>
+  <nav>
+    <Navigation />
+    <ThemeToggle client:only />
+  </nav>
+</header>
+
+<style>
+  header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  h3 {
+    margin: 0;
+  }
+
+  nav {
+    display: flex;
+  }
+</style>

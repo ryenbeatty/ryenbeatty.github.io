@@ -1,0 +1,39 @@
+@import './reset.css';
+@import './typography.css';
+
+:root {
+  /* --accent: 136, 58, 234;
+  --accent-light: 224, 204, 250;
+  --accent-dark: 49, 10, 101;
+  --accent-gradient: linear-gradient(
+    45deg,
+    rgb(var(--accent)),
+    rgb(var(--accent-light)) 30%,
+    white 60%
+  ); */
+}
+
+body {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 120ch;
+  padding: 1rem;
+}
+
+html {
+  background-color: #0d0b25;
+  color: #b0aaba;
+}
+
+a {
+  color: #b0aaba;
+}
+
+html.dark {
+  background-color: #252525;
+  color: #fff;
+}
+
+.dark a {
+  color: #fff;
+}
