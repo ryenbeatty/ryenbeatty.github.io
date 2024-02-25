@@ -1,0 +1,51 @@
+---
+import { Image } from 'astro:assets'
+import type { ImageMetadata } from 'astro'
+
+const { src, alt, caption, figNum, type } = Astro.props
+
+const pathPrefix = '../assets/'
+
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  '../assets/*.{jpg,png}',
+)
+
+if (!images[`${pathPrefix}${src}`]) throw new Error(`"${src}" does not exist`)
+---
+
+<figure>
+  <Image src={images[`${pathPrefix}${src}`]()} alt={alt} />
+
+  <div class="caption">
+    <p>{figNum}</p>
+    <figcaption>{caption}</figcaption>
+    <span>{type}</span>
+  </div>
+</figure>
+
+<style>
+  * {
+    margin: 0;
+  }
+  figure {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  figcaption {
+    /* margin-top: 8px; */
+  }
+
+  span {
+    border: 1px solid black;
+    border-radius: 8.5px;
+    padding: 0 6px;
+    text-transform: uppercase;
+  }
+
+  .caption {
+    display: flex;
+    margin-top: 8px;
+  }
+</style>

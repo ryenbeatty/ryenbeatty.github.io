@@ -1,13 +1,26 @@
 ---
-import { getEntry, getEntries, getCollection } from 'astro:content';
+import Layout from 'layouts/BaseLayout.astro'
 
-const allPosts = await getCollection('blog');
-const blogIntro = await getEntry('blog', 'intro');
+import { getEntry, getEntries, getCollection } from 'astro:content'
 
+const allPosts = await getCollection(
+  'blog',
+  ({ data }) => data.type !== 'page-meta',
+)
+const meta = await getEntry('blog', 'meta')
 ---
 
-<h1>{blogIntro.data.title}</h1>
+<Layout title={meta?.data.title} description={meta?.data.description}>
+  <h1>{meta?.data.title}</h1>
+  <p>{meta?.data.description}</p>
 
-{allPosts.map(p => (
-  <a href={`/articles/${p.slug}`}>{p.data.title}</a>
-))}
+  <ul>
+    {
+      allPosts.map((p) => (
+        <li>
+          <a href={`/articles/${p.slug}`}>{p.data.title}</a>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>
