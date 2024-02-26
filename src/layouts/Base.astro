@@ -1,0 +1,20 @@
+---
+import 'styles/global.css'
+
+import CommonHead from 'components/CommonHead.astro'
+const { frontmatter } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <CommonHead
+      title={frontmatter?.title}
+      description={frontmatter?.description}
+    />
+  </head>
+
+  <body>
+    <slot />
+  </body>
+</html>

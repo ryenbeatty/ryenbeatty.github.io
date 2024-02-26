@@ -1,58 +1,16 @@
 <script lang="ts">
-  // Import styles.
   import 'vidstack/player/styles/base.css'
   import './buttons.css'
-  // Register elements.
+
   import 'vidstack/player'
   import 'vidstack/player/ui'
   import 'vidstack/icons'
 
-  import { onMount } from 'svelte'
-  import {
-    isHLSProvider,
-    type MediaCanPlayEvent,
-    type MediaProviderChangeEvent,
-  } from 'vidstack'
   import type { MediaPlayerElement } from 'vidstack/elements'
 
   import VideoLayout from './components/layouts/VideoLayout.svelte'
-  // import { textTracks } from './tracks';
 
   let player: MediaPlayerElement
-
-  onMount(() => {
-    /**
-     * You can add these tracks using HTML as well.
-     *
-     * @example
-     * ```html
-     * <media-provider>
-     *   <track label="..." src="..." kind="..." srclang="..." default />
-     *   <track label="..." src="..." kind="..." srclang="..." />
-     * </media-provider>
-     * ```
-     */
-    // for (const track of textTracks) player.textTracks.add(track);
-
-    // Subscribe to state updates.
-    return player.subscribe(({ paused, viewType }) => {
-      // console.log('is paused?', '->', paused);
-      // console.log('is audio view?', '->', viewType === 'audio');
-    })
-  })
-
-  function onProviderChange(event: MediaProviderChangeEvent) {
-    const provider = event.detail
-    // We can configure provider's here.
-    if (isHLSProvider(provider)) {
-      provider.config = {}
-    }
-  }
-
-  // We can listen for the `can-play` event to be notified when the player is ready.
-  function onCanPlay(event: MediaCanPlayEvent) {
-    // ...
-  }
 </script>
 
 <media-player
@@ -61,8 +19,6 @@
   src="https://stream.mux.com/VZtzUzGRv02OhRnZCxcNg49OilvolTqdnFLEqBsTwaxU/low.mp4"
   crossorigin
   playsinline
-  on:provider-change={onProviderChange}
-  on:can-play={onCanPlay}
   bind:this={player}
 >
   <media-provider>
@@ -76,7 +32,7 @@
   <VideoLayout />
 </media-player>
 
-<style lang="postcss">
+<style>
   .player {
     --media-brand: #f5f5f5;
     --media-focus-ring-color: #4e9cf6;

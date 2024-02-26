@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { TooltipPlacement } from 'vidstack';
+  import type { TooltipPlacement } from 'vidstack'
 
-  import Tooltip from '../Tooltip.svelte';
+  import Tooltip from '../Tooltip.svelte'
 
-  export let tooltipPlacement: TooltipPlacement;
+  export let tooltipPlacement: TooltipPlacement
 </script>
 
 <Tooltip placement={tooltipPlacement}>
