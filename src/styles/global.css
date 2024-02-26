@@ -21,8 +21,8 @@ body {
 }
 
 html {
-  background-color: #0d0b25;
-  color: #b0aaba;
+  background-color: #fff;
+  color: #000;
 }
 
 a {
@@ -30,10 +30,32 @@ a {
 }
 
 html.dark {
-  background-color: #252525;
-  color: #fff;
+  background-color: #0d0b25;
+  color: #b0aaba;
 }
 
 .dark a {
   color: #fff;
+}
+
+@keyframes fadeIn {
+  from {
+    transform: translateY(20%);
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20%);
+  }
 }

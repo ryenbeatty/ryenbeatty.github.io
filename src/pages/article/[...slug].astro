@@ -1,11 +1,10 @@
 ---
-import Layout from 'layouts/BaseLayout.astro'
+import Layout from 'layouts/Primary.astro'
 
 import { getCollection } from 'astro:content'
 
 export async function getStaticPaths() {
-  const content = await getCollection('blog')
-
+  const content = await getCollection('article')
   return content.map((entry) => ({
     params: { slug: entry.slug },
     props: { entry },
@@ -16,8 +15,7 @@ const { entry } = Astro.props
 const { Content } = await entry.render()
 ---
 
-<Layout>
-  <p>article layout</p>
+<Layout frontmatter={entry.data}>
   <a href="/articles">Back to articles</a>
 
   <Content />
