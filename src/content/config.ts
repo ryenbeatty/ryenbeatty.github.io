@@ -13,7 +13,6 @@ const article = defineCollection({
 const project = defineCollection({
   type: 'content',
   schema: z.object({
-    isDraft: z.boolean(),
     title: z.string(),
     date: z.date(),
   }),
