@@ -1,5 +1,5 @@
 ---
-// import { ViewTransitions } from 'astro:transitions'
+import { ViewTransitions } from 'astro:transitions'
 import { SEO } from 'astro-seo'
 const { title = 'Ryen Beatty', description } = Astro.props
 ---
@@ -50,4 +50,4 @@ const { title = 'Ryen Beatty', description } = Astro.props
 <meta name="viewport" content="width=device-width" />
 <meta name="generator" content={Astro.generator} />
 
-<!-- <ViewTransitions /> -->
+<ViewTransitions transition:animate="slide" />

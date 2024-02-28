@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets'
 import Parser from 'rss-parser'
 import { LetterboxdFeedType } from 'src/index.enums'
 
@@ -15,22 +16,28 @@ const films = items
   }))
 ---
 
-<div class="flex">
+<section>
   {
     films.map((film) => (
-      <section>
-        <li>{film.title}</li>
-        <img src={film.img} />
-      </section>
+      <div>
+        <p>{film.title}</p>
+        {film.img ? (
+          <Image
+            src={film.img}
+            alt={film.title || ''}
+            width="400"
+            height="400"
+          />
+        ) : null}
+      </div>
     ))
   }
-</div>
+</section>
 
 <style>
-  .flex {
-    display: flex;
-  }
   section {
-    margin-right: var(--sp-m);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: var(--sp-m);
   }
 </style>

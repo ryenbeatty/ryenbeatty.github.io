@@ -5,7 +5,7 @@ isDraft: true
 ---
 
 import Figure from 'components/Figure.astro'
-import Media from '../../components/Media/index.svelte'
+import Media from 'components/Media/index.svelte'
 import { Image } from 'astro:assets'
 import { FigureType } from '../../index.enums.ts'
 import { figureTypeLabel } from 'src/index.types'
@@ -203,7 +203,7 @@ function $initHighlight(block, cls) {
   }
   for (var i = 0 / 2; i < classes.length; i++) {
     if (checkCondition(classes[i]) === undefined)
-      console.log('undefined');
+
   }
 }
 
