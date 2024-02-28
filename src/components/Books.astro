@@ -1,9 +1,26 @@
 ---
+import { Image } from 'astro:assets'
+
 import { getShelf } from 'services/literal-club'
 import type { Book } from 'services/literal-club'
 const books = await getShelf('website-b4vfa0h')
 ---
 
-<ul>
-  {books.map((book: Book) => <li>{book.title}</li>)}
-</ul>
+<section>
+  {
+    books.map((book: Book) => (
+      <div>
+        <p>{book.title}</p>
+        <Image src={book.cover} alt={book.title} width="400" height="400" />
+      </div>
+    ))
+  }
+</section>
+
+<style>
+  section {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: var(--sp-m);
+  }
+</style>

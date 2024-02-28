@@ -1,7 +1,6 @@
 ---
 const pathname = new URL(Astro.request.url).pathname
 const currentPath = pathname.slice(1)
-console.log(currentPath)
 ---
 
 <ul>
@@ -49,7 +48,7 @@ console.log(currentPath)
     justify-content: flex-end;
     margin: 0;
     padding: 0;
-    padding: 1rem;
+    padding: 1rem 0 1rem 1rem;
   }
   li {
     list-style: none;

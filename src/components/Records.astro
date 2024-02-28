@@ -2,16 +2,30 @@
 import { Image } from 'astro:assets'
 import { getCollection } from 'astro:content'
 const records = await getCollection('record')
-console.log(records)
+import Media from 'components/Media/index.svelte'
 ---
 
-<ul>
+<section>
   {
     records.map(({ data }) => (
       <div>
-        <p>{data.title}</p>
-        <Image src={data.cover} width="100" height="100" alt={data.title} />
+        <a href={data.url} target="_blank" rel="noreferrer">
+          <Image src={data.cover} alt={data.title} width="400" height="400" />
+        </a>
+        <p>
+          <a href={data.url} target="_blank" rel="noreferrer">
+            {data.title}
+          </a>
+        </p>
       </div>
     ))
   }
-</ul>
+</section>
+
+<style>
+  section {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-gap: var(--sp-m);
+  }
+</style>
