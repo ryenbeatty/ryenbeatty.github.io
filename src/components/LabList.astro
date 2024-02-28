@@ -1,0 +1,15 @@
+---
+import { getCollection } from 'astro:content'
+
+const projects = await getCollection('lab')
+---
+
+<section>
+  {
+    projects.map((p) => (
+      <a href={`/lab/${p.slug}`} data-astro-prefetch="load">
+        {p.data.title}
+      </a>
+    ))
+  }
+</section>

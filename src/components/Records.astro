@@ -1,0 +1,17 @@
+---
+import { Image } from 'astro:assets'
+import { getCollection } from 'astro:content'
+const records = await getCollection('record')
+console.log(records)
+---
+
+<ul>
+  {
+    records.map(({ data }) => (
+      <div>
+        <p>{data.title}</p>
+        <Image src={data.cover} width="100" height="100" alt={data.title} />
+      </div>
+    ))
+  }
+</ul>

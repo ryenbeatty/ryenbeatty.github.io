@@ -2,6 +2,11 @@
   "name": "v3",
   "type": "module",
   "version": "0.0.1",
+  "packageManager": "pnpm@8.7.0",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
@@ -12,10 +17,15 @@
   "dependencies": {
     "@astrojs/check": "^0.5.2",
     "@astrojs/mdx": "^2.1.1",
+    "@astrojs/sitemap": "^3.1.1",
     "@astrojs/svelte": "^5.0.3",
     "@astrojs/ts-plugin": "^1.5.3",
     "astro": "^4.3.5",
+    "astro-robots-txt": "^1.0.0",
+    "astro-seo": "^0.8.2",
+    "date-fns": "^3.3.1",
     "media-icons": "^0.10.0",
+    "rss-parser": "^3.13.0",
     "svelte": "^4.2.12",
     "typescript": "^5.3.3",
     "vidstack": "^1.10.9"

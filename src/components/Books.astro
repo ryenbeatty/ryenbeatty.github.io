@@ -1,0 +1,9 @@
+---
+import { getShelf } from 'services/literal-club'
+import type { Book } from 'services/literal-club'
+const books = await getShelf('website-b4vfa0h')
+---
+
+<ul>
+  {books.map((book: Book) => <li>{book.title}</li>)}
+</ul>

@@ -1,11 +1,10 @@
 ---
 import Layout from 'layouts/Primary.astro'
-import { format } from 'date-fns'
 
 import { getCollection } from 'astro:content'
 
 export async function getStaticPaths() {
-  const content = await getCollection('project')
+  const content = await getCollection('lab')
   return content.map((entry) => ({
     params: { slug: entry.slug },
     props: { entry },
@@ -17,8 +16,7 @@ const { Content } = await entry.render()
 ---
 
 <Layout frontmatter={entry.data}>
-  <a href="/">All projects</a>
-  <h1>{entry.data.title}</h1>
-  <p>{format(entry.data.date, 'iii do, y')}</p>
+  <a href="/lab">Back to lab</a>
+
   <Content />
 </Layout>

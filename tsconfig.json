@@ -1,5 +1,6 @@
 {
   "extends": "astro/tsconfigs/strict",
+  "exclude": ["dist/"],
   "compilerOptions": {
     "types": ["vidstack/svelte"],
     "strictNullChecks": true,
@@ -12,9 +13,11 @@
     ],
     "baseUrl": ".",
     "paths": {
+      "src/*": ["src/*"],
       "components/*": ["src/components/*"],
       "layouts/*": ["src/layouts/*"],
-      "styles/*": ["src/styles/*"]
+      "styles/*": ["src/styles/*"],
+      "services/*": ["src/services/*"]
     }
   }
 }

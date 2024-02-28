@@ -11,22 +11,26 @@
   import VideoLayout from './components/layouts/VideoLayout.svelte'
 
   let player: MediaPlayerElement
+  export let viewType: MediaViewType = 'video'
+  export let src =
+    'https://stream.mux.com/VZtzUzGRv02OhRnZCxcNg49OilvolTqdnFLEqBsTwaxU/low.mp4'
+  export let title = 'Sprite Fight'
+  export let poster =
+    'https://image.mux.com/VZtzUzGRv02OhRnZCxcNg49OilvolTqdnFLEqBsTwaxU/thumbnail.webp?time=268&width=1200'
+  export let posterAlt =
+    'Girl walks into campfire with gnomes surrounding her friend ready for their next meal!'
 </script>
 
 <media-player
   class="player"
-  title="Sprite Fight"
-  src="https://stream.mux.com/VZtzUzGRv02OhRnZCxcNg49OilvolTqdnFLEqBsTwaxU/low.mp4"
+  {title}
+  {src}
   crossorigin
   playsinline
   bind:this={player}
 >
   <media-provider>
-    <media-poster
-      class="poster"
-      src="https://image.mux.com/VZtzUzGRv02OhRnZCxcNg49OilvolTqdnFLEqBsTwaxU/thumbnail.webp?time=268&width=1200"
-      alt="Girl walks into campfire with gnomes surrounding her friend ready for their next meal!"
-    />
+    <media-poster class="poster" src={poster} alt={posterAlt} />
   </media-provider>
 
   <VideoLayout />

@@ -1,16 +1,20 @@
-import { defineConfig } from 'astro/config'
+import { defineConfig } from 'astro/config';
+import svelte from '@astrojs/svelte';
+import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap';
+import { vite as vidstack } from 'vidstack/plugins';
+import robotsTxt from 'astro-robots-txt';
 
-import svelte from '@astrojs/svelte'
-import mdx from '@astrojs/mdx'
 
-import { vite as vidstack } from 'vidstack/plugins'
-
+// https://astro.build/config
 export default defineConfig({
-  site: 'https://ryenbeatty.github.io',
+  site: 'https://ryenbeatty.info',
   base: '/',
   prefetch: true,
-  integrations: [svelte(), mdx()],
+  integrations: [svelte(), mdx(), sitemap(), robotsTxt()],
   vite: {
-    plugins: [vidstack({ include: /player\// })],
-  },
-})
+    plugins: [vidstack({
+      include: /player\//
+    })]
+  }
+});

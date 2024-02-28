@@ -1,11 +1,45 @@
 ---
-
+const pathname = new URL(Astro.request.url).pathname
+const currentPath = pathname.slice(1)
+console.log(currentPath)
 ---
 
 <ul>
-  <li><a href="/about" data-astro-prefetch>About</a></li>
-  <li><a href="/portfolio" data-astro-prefetch>Portfolio</a></li>
-  <li><a href="/articles" data-astro-prefetch>Writing</a></li>
+  <li>
+    <a
+      class={currentPath === 'about' ? 'active' : ''}
+      href="/about"
+      data-astro-prefetch>About</a
+    >
+  </li>
+  <li>
+    <a
+      class={currentPath === 'portfolio' ? 'active' : ''}
+      href="/portfolio"
+      data-astro-prefetch>Portfolio</a
+    >
+  </li>
+  <li>
+    <a
+      class={currentPath === 'lab' ? 'active' : ''}
+      href="/lab"
+      data-astro-prefetch>Lab</a
+    >
+  </li>
+  <li>
+    <a
+      class={currentPath === 'playlist' ? 'active' : ''}
+      href="/playlist"
+      data-astro-prefetch>Playlist</a
+    >
+  </li>
+  <li>
+    <a
+      class={currentPath === 'articles' ? 'active' : ''}
+      href="/articles"
+      data-astro-prefetch>Writing</a
+    >
+  </li>
 </ul>
 
 <style>
@@ -20,5 +54,8 @@
   li {
     list-style: none;
     padding-right: 15px;
+  }
+  .active {
+    font-weight: bold;
   }
 </style>
