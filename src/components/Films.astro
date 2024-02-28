@@ -1,0 +1,36 @@
+---
+import Parser from 'rss-parser'
+import { LetterboxdFeedType } from 'src/index.enums'
+
+const parser: Parser = new Parser()
+
+const { items } = await parser.parseURL('https://letterboxd.com/ryenbeatty/rss')
+
+const films = items
+  .filter((item) => item.guid?.includes(LetterboxdFeedType.Watch))
+  .slice(0, 5)
+  .map((el) => ({
+    ...el,
+    img: /src\s*=\s*"(.+?)"/.exec(el.content as string)?.at(1),
+  }))
+---
+
+<div class="flex">
+  {
+    films.map((film) => (
+      <section>
+        <li>{film.title}</li>
+        <img src={film.img} />
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .flex {
+    display: flex;
+  }
+  section {
+    margin-right: var(--sp-m);
+  }
+</style>

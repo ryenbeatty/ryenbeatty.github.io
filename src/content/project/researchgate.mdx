@@ -1,11 +1,14 @@
 ---
-title: Test study
+title: ResearchGate
+date: 2022-01-01
+isDraft: true
 ---
 
 import Figure from 'components/Figure.astro'
-import Video from 'components/Video/index.svelte'
+import Media from '../../components/Media/index.svelte'
 import { Image } from 'astro:assets'
 import { FigureType } from '../../index.enums.ts'
+import { figureTypeLabel } from 'src/index.types'
 
 # h1 Headings
 
@@ -319,13 +322,13 @@ Underscores
 
 [![IMAGE ALT TEXT HERE](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/YouTube_logo_2015.svg/1200px-YouTube_logo_2015.svg.png)](https://www.youtube.com/watch?v=ciawICBvQoE)
 
-<Video title="The title" />
+<Media title="The title" />
 
 <Figure
   src="test.png"
   alt="test"
   caption="Homepage motion concept."
   figNum={0.1}
-  type="Video loop"
+  type={figureTypeLabel[FigureType.VideoLoop]}
 />
 s

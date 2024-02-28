@@ -1,8 +1,10 @@
 ---
 import { Image } from 'astro:assets'
 import type { ImageMetadata } from 'astro'
+import { figureTypeLabel } from 'src/index.types'
+import type { FigureType } from 'src/index.enums'
 
-const { src, alt, caption, figNum, type, index } = Astro.props
+const { src, alt, caption, figNum, type } = Astro.props
 
 const pathPrefix = '../assets/'
 
@@ -34,27 +36,45 @@ const myFade = {
 ---
 
 <figure transition:animate={myFade}>
-  <Image src={images[`${pathPrefix}${src}`]()} alt={alt} />
+  <div class="img">
+    <Image src={images[`${pathPrefix}${src}`]()} width="500" alt={alt} />
+  </div>
 
   <div class="caption">
-    <p>{figNum}</p>
+    {figNum ? <p>{figNum}</p> : null}
     <figcaption>{caption}</figcaption>
-    <span>{type}</span>
+    {
+      type ? (
+        <div>
+          <span>{figureTypeLabel[type as FigureType]}</span>{' '}
+        </div>
+      ) : null
+    }
   </div>
 </figure>
 
 <style>
-  * {
+  p {
     margin: 0;
   }
   figure {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+    display: grid;
+    grid-template-columns: 1fr 60px;
+    margin-bottom: 2rem;
+    /* border-bottom: 1px solid #000;
+    border-right: 1px solid #000; */
+  }
+
+  img {
+    /* grid-template-rows: 3; */
+    width: 100%;
+    /* flex-grow: 1; */
   }
 
   figcaption {
     /* margin-top: 8px; */
+    /* writing-mode: vertical-rl;
+    text-orientation: mixed; */
   }
 
   span {
@@ -62,10 +82,17 @@ const myFade = {
     border-radius: 8.5px;
     padding: 0 6px;
     text-transform: uppercase;
+    padding: var(--sp-xs);
+    font-size: var(--sp-xs);
   }
 
   .caption {
-    display: flex;
-    margin-top: 8px;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    display: grid;
+    text-align: center;
+    /* grid-template-rows: 3; */
+    grid-template-columns: 1fr 1fr auto;
+    /* align-items: center; */
   }
 </style>
