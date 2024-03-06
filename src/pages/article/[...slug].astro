@@ -18,5 +18,7 @@ const { Content } = await entry.render()
 <Layout frontmatter={entry.data}>
   <a href="/articles">Back to articles</a>
 
-  <Content />
+  <div class="container">
+    <div class="article-body"><Content /></div>
+  </div>
 </Layout>

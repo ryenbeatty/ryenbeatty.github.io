@@ -5,7 +5,7 @@ const projects = await getCollection('project')
 ---
 
 <section>
-  {
+  <span>Projects:</span>{
     projects.map((p) => (
       <a href={`/portfolio/${p.slug}`} data-astro-prefetch="load">
         {p.data.title}
