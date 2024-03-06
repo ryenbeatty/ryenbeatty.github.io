@@ -7,12 +7,22 @@ import Navigation from 'components/Navigation.astro'
 import Media from 'components/Media/index.svelte'
 import Books from 'components/Books.astro'
 import Films from 'components/Films.astro'
+import Listening from 'components/Listening.svelte'
+import Weather from 'components/Weather.svelte'
 
-# Ryen Beatty is a design focused engineer based in Berlin.
+<Weather client:load />
 
-This site is best enjoyed with music, so go on, put a record on
+# Ryen Beatty is a designer and engineer based in Berlin.
+
+I design and build systems
 
 <ProjectList />
+
+<Listening client:load />
+
+<Books />
+
+<Films />
 
 <a href="/portfolio">Portfolio</a>
 <a href="/articles">Writing</a>
