@@ -1,0 +1,16 @@
+---
+import { getData } from '../services/lastfm'
+const METHOD = 'user.getRecentTracks'
+
+const tracks = await getData(METHOD)
+---
+
+<p>Listening to:</p>
+{
+  tracks.recenttracks.track.slice(0, 9).map((track) => (
+    <li>
+      {track.name} by
+      {track.artist['#text']}
+    </li>
+  ))
+}

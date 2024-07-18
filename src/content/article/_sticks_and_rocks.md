@@ -1,0 +1,5 @@
+- raphael schaad
+- https://youtu.be/2MrNSjJFBBI?si=ba10EghUcz6AVEdY&t=485
+- prototyping in the medium
+- architecture materials
+- 

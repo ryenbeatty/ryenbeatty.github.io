@@ -4,42 +4,33 @@
     "type": "split",
     "children": [
       {
-        "id": "ce9e758c82c1c49c",
+        "id": "0212a742d78503a7",
         "type": "tabs",
         "children": [
           {
-            "id": "b7c93d1d31891ec1",
+            "id": "0a9fdbc8d8573671",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "article/test-markdown.mdx",
+                "file": "article/_sticks_and_rocks.md",
                 "mode": "source",
                 "source": false
               }
-            },
-            "group": "3541cdeed1b07fd8"
-          }
-        ]
-      },
-      {
-        "id": "3cb749598da2f137",
-        "type": "tabs",
-        "children": [
+            }
+          },
           {
-            "id": "6ebae3e4a1641be6",
+            "id": "a3e34e5bd4faba01",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "release-notes",
               "state": {
-                "file": "article/test-markdown.mdx",
-                "mode": "preview",
-                "source": false
+                "currentVersion": "1.5.12"
               }
-            },
-            "group": "3541cdeed1b07fd8"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -105,7 +96,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "article/test-markdown.mdx",
+                "file": "article/_sticks_and_rocks.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -122,7 +113,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "article/test-markdown.mdx",
+                "file": "article/_sticks_and_rocks.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -145,7 +136,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "article/test-markdown.mdx"
+                "file": "article/_sticks_and_rocks.md"
               }
             }
           }
@@ -153,8 +144,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -167,8 +157,11 @@
       "edit-mdx:New .mdx file": false
     }
   },
-  "active": "6ebae3e4a1641be6",
+  "active": "a3e34e5bd4faba01",
   "lastOpenFiles": [
+    "article/post-3.mdx",
+    "article/_sticks_and_rocks.md",
+    "article/test-markdown.mdx",
     "lab/atmospheres.mdx",
     "article/post-2.mdx",
     "article/post-1.mdx"

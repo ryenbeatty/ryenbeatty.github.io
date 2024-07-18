@@ -2,29 +2,25 @@
 layout: ../layouts/Base.astro
 ---
 
-import ProjectList from 'components/ProjectList.astro'
-import Navigation from 'components/Navigation.astro'
-import Media from 'components/Media/index.svelte'
 import Books from 'components/Books.astro'
 import Films from 'components/Films.astro'
-import Listening from 'components/Listening.svelte'
-import Weather from 'components/Weather.svelte'
-
-<Weather client:load />
-
-# Ryen Beatty is a designer and engineer based in Berlin.
-
-I design and build systems
-
-<ProjectList />
-
-<Listening client:load />
-
-<Books />
-
-<Films />
+import Listening from 'components/Listening.astro'
+import Navigation from 'components/Navigation.astro'
+import ProjectList from 'components/ProjectList.astro'
+import Weather from 'components/Weather.astro'
 
 <a href="/portfolio">Portfolio</a>
 <a href="/articles">Writing</a>
 <a href="/playlist">Playlist</a>
 <a href="/about">About</a>
+
+# Hey I'm Ryen, a [design engineer](https://www.proofofconcept.pub/p/design-engineering) based in Berlin.
+
+I design and build systems
+
+<ProjectList />{' '}
+
+<Weather />
+<Listening />
+<Books />
+<Films />

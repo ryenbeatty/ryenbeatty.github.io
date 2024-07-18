@@ -1,0 +1,10 @@
+---
+import { getData } from '../services/weather'
+
+const city = 'ericeira'
+const weather = await getData(city)
+---
+
+<p>weather in {city}</p>
+<p>temp: {weather.current.temp_c}°</p>
+<p>wind: {weather.current.wind_kph}kph</p>
