@@ -1,8 +1,8 @@
 ---
-import { Image } from 'astro:assets'
 import type { ImageMetadata } from 'astro'
-import { figureTypeLabel } from 'src/index.types'
+import { Image } from 'astro:assets'
 import type { FigureType } from 'src/index.enums'
+import { figureTypeLabel } from 'src/index.types'
 
 const { src, alt, caption, figNum, type } = Astro.props
 
@@ -14,25 +14,25 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 
 if (!images[`${pathPrefix}${src}`]) throw new Error(`"${src}" does not exist`)
 
-const anim = {
-  old: {
-    name: 'fadeIn',
-    duration: '0.2s',
-    easing: 'linear',
-    fillMode: 'forwards',
-  },
-  new: {
-    name: 'fadeOut',
-    duration: '0.3s',
-    easing: 'linear',
-    fillMode: 'backwards',
-  },
-}
+// const anim = {
+//   old: {
+//     name: 'fadeIn',
+//     duration: '0.2s',
+//     easing: 'linear',
+//     fillMode: 'forwards',
+//   },
+//   new: {
+//     name: 'fadeOut',
+//     duration: '0.3s',
+//     easing: 'linear',
+//     fillMode: 'backwards',
+//   },
+// }
 
-const myFade = {
-  forwards: anim,
-  backwards: anim,
-}
+// const myFade = {
+//   forwards: anim,
+//   backwards: anim,
+// }
 ---
 
 <figure>
