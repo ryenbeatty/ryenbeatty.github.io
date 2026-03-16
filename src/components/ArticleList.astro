@@ -4,11 +4,13 @@ import { getCollection } from 'astro:content'
 const articles = await getCollection('article')
 ---
 
-<ul>
+<ul class="list-none m-0">
   {
     articles.map((p) => (
       <li>
-        <a href={`/article/${p.slug}`}>{p.data.title}</a>
+        <a href={`/writing/${p.slug}`} class="link">
+          {p.data.title}
+        </a>
       </li>
     ))
   }

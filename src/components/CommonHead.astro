@@ -1,7 +1,8 @@
 ---
-import { ViewTransitions } from 'astro:transitions'
 import { SEO } from 'astro-seo'
-const { title = 'Ryen Beatty', description } = Astro.props
+import { ViewTransitions } from 'astro:transitions'
+const { title = 'ryen beatty - design & engineering', description } =
+  Astro.props
 ---
 
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -45,8 +46,8 @@ const { title = 'Ryen Beatty', description } = Astro.props
 
 <!-- Primary Meta Tags -->
 <meta charset="UTF-8" />
-<!-- <meta name="title" content={title} />
-<meta name="description" content={description} /> -->
+<meta name="title" content={title} />
+<meta name="description" content={description} />
 <meta name="viewport" content="width=device-width" />
 <meta name="generator" content={Astro.generator} />
 

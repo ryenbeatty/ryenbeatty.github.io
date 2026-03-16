@@ -1,4 +1,4 @@
-export const getData = async (location: string) =>
+export const getWeatherData = async (location: string) =>
   fetch(
     `https://api.weatherapi.com/v1/current.json?key=${import.meta.env.PUBLIC_WEATHER_API_KEY}&q=${location}&aqi=no`,
   )

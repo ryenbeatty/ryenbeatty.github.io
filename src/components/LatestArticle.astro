@@ -1,0 +1,10 @@
+---
+import { getCollection } from 'astro:content'
+
+const articles = await getCollection('article')
+const latestArticle = articles[0]
+---
+
+<a href={`/articles/${latestArticle.slug}`} class="link">
+  {latestArticle.data.title}
+</a>

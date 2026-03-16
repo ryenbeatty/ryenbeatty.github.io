@@ -16,7 +16,12 @@ const { Content } = await entry.render()
 ---
 
 <Layout frontmatter={entry.data}>
-  <a href="/lab">Back to lab</a>
+  <div class="flex flex-row gap-2 w-full justify-between">
+    <a class="text-sm" href="/lab">Previous</a>
+    <a class="text-sm" href="/lab">Next</a>
+  </div>
 
-  <Content />
+  <div class="border">
+    <Content />
+  </div>
 </Layout>

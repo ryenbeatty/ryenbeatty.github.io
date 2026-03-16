@@ -4,12 +4,14 @@ import { getCollection } from 'astro:content'
 const projects = await getCollection('lab')
 ---
 
-<section>
+<ul>
   {
     projects.map((p) => (
-      <a href={`/lab/${p.slug}`} data-astro-prefetch="load">
-        {p.data.title}
-      </a>
+      <li>
+        <a href={`/lab/${p.slug}`} data-astro-prefetch="load">
+          {p.data.title}
+        </a>
+      </li>
     ))
   }
-</section>
+</ul>

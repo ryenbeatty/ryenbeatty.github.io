@@ -1,0 +1,73 @@
+---
+import { ViewTransitions } from 'astro:transitions'
+
+interface Props {
+  password: string
+  storageKey?: string // unique key for localStorage (e.g. slug); defaults to 'default'
+  title?: string
+}
+
+const { password, storageKey = 'default', title = 'Protected Page' } = Astro.props
+const authKey = `project-auth-${storageKey}`
+---
+
+<div id="protected-content" style="display: none;">
+  <slot />
+</div>
+
+<div id="password-form" class="password-screen">
+  <div class="password-container">
+    <h1>Protected Content</h1>
+    <form id="auth-form">
+      <input
+        type="password"
+        id="password-input"
+        placeholder="Enter password"
+        required
+      />
+      <button type="submit">Submit</button>
+    </form>
+    <p id="error-message" class="error"></p>
+  </div>
+</div>
+
+<script define:vars={{ password, authKey }}>
+  // Check if already authenticated for this key
+  const isAuthenticated = () => {
+    return localStorage.getItem(authKey) === 'true'
+  }
+
+  // Show the appropriate content
+  const updateVisibility = () => {
+    const protectedContent = document.getElementById('protected-content')
+    const passwordForm = document.getElementById('password-form')
+
+    if (isAuthenticated()) {
+      protectedContent.style.display = 'block'
+      passwordForm.style.display = 'none'
+    } else {
+      protectedContent.style.display = 'none'
+      passwordForm.style.display = 'flex'
+    }
+  }
+
+  // Handle form submission
+  const form = document.getElementById('auth-form')
+  const errorMessage = document.getElementById('error-message')
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault()
+    const input = document.getElementById('password-input')
+
+    if (input.value === password) {
+      localStorage.setItem(authKey, 'true')
+      updateVisibility()
+    } else {
+      errorMessage.textContent = 'Incorrect password'
+      input.value = ''
+    }
+  })
+
+  // Initial check
+  updateVisibility()
+</script>

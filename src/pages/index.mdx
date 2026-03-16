@@ -2,29 +2,39 @@
 layout: ../layouts/Base.astro
 ---
 
-import ProjectList from 'components/ProjectList.astro'
-import Navigation from 'components/Navigation.astro'
-import Media from 'components/Media/index.svelte'
 import Books from 'components/Books.astro'
 import Films from 'components/Films.astro'
+import LatestArticle from 'components/LatestArticle.astro'
 import Listening from 'components/Listening.svelte'
+import Media from 'components/Media/index.svelte'
+import Navigation from 'components/Navigation.astro'
+import ProjectList from 'components/ProjectList.astro'
 import Weather from 'components/Weather.svelte'
 
-<Weather client:load />
+<Navigation variant="home" />
 
-# Ryen Beatty is a designer and engineer based in Berlin.
+{/* <Weather client:load /> */}
 
-I design and build systems
+<div class="mt-12 mb-16 max-w-prose">
+  <p class="text-xl leading-relaxed text-gray-800 dark:text-gray-200">
+    Hi, I'm <strong class="font-medium">Ryen</strong>, a designer and frontend
+    engineer living in Berlin. You can catch me making electronic music, reading
+    scifi, cooking cacio e pepe or chasing summer around the world.
+  </p>
+</div>
+
+<div class="flex flex-row gap-12 mb-24">
+  <div class="flex-1">
+    <p class="text-xs uppercase tracking-wider mb-3 text-gray-600">Latest article</p>
+    <LatestArticle />
+  </div>
+
+  <div class="flex-1">
+    <p class="text-xs uppercase tracking-wider mb-3 text-gray-600">Listening</p>
+    <Listening client:load />
+  </div>
+</div>
+
+<span id="work" class="block -mt-8" />
 
 <ProjectList />
-
-<Listening client:load />
-
-<Books />
-
-<Films />
-
-<a href="/portfolio">Portfolio</a>
-<a href="/articles">Writing</a>
-<a href="/playlist">Playlist</a>
-<a href="/about">About</a>

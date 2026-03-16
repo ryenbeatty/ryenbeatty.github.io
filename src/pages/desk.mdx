@@ -1,0 +1,29 @@
+---
+layout: ../layouts/Primary.astro
+title: Studio | Ryen Beatty
+description: Ryen Beatty's studio
+---
+
+import LabList from '../components/LabList.astro'
+import RecordsYear from '../components/RecordsYear.svelte'
+
+import Books from '../components/Books.astro'
+import Films from '../components/Films.astro'
+import Listening from '../components/Listening.svelte'
+import Records from '../components/Records.astro'
+
+### Bookshelf
+
+{/* <Books /> */}
+
+### Lookin'
+
+<Films />
+
+### Listening
+
+<Listening client:load />
+
+{/* <RecordsYear client:load /> */}
+
+{/* <Records /> */}

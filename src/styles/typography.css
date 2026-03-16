@@ -7,6 +7,10 @@
 }
 
 :root {
+  --font-serif: 'Untitled Sans';
+  --font-mono: 'Space Mono', Menlo, Consolas, Monaco, Liberation Mono,
+    Lucida Console, monospace;
+
   --step--2: clamp(0.7813rem, 0.7747rem + 0.0326vi, 0.8rem);
   --step--1: clamp(0.9375rem, 0.9158rem + 0.1087vi, 1rem);
   --step-0: clamp(1.125rem, 1.0815rem + 0.2174vi, 1.25rem);
@@ -18,17 +22,21 @@
 }
 
 html {
+  /* https://systemfontstack.com/ */
   font-family:
-    system,
     -apple-system,
-    '.SFNSText-Regular',
-    'San Francisco',
-    'Roboto',
-    'Segoe UI',
-    'Helvetica Neue',
-    'Lucida Grande',
+    BlinkMacSystemFont,
+    avenir next,
+    avenir,
+    segoe ui,
+    helvetica neue,
+    Cantarell,
+    Ubuntu,
+    roboto,
+    noto,
+    helvetica,
+    arial,
     sans-serif;
-
   font-weight: 400;
   font-style: normal;
   text-rendering: optimizeLegibility;
@@ -41,10 +49,10 @@ body {
 }
 
 code {
-  font-family: Consolas, 'Andale Mono WT', 'Andale Mono', 'Lucida Console',
-    'Lucida Sans Typewriter', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono',
-    'Liberation Mono', 'Nimbus Mono L', Monaco, 'Courier New', Courier,
-    monospace;
+  font-family: var(--font-mono), 'Andale Mono WT', 'Andale Mono',
+    'Lucida Console', 'Lucida Sans Typewriter', 'DejaVu Sans Mono',
+    'Bitstream Vera Sans Mono', 'Liberation Mono', 'Nimbus Mono L', Monaco,
+    'Courier New', Courier, monospace;
 }
 
 h1,

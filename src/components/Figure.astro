@@ -13,26 +13,6 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 )
 
 if (!images[`${pathPrefix}${src}`]) throw new Error(`"${src}" does not exist`)
-
-// const anim = {
-//   old: {
-//     name: 'fadeIn',
-//     duration: '0.2s',
-//     easing: 'linear',
-//     fillMode: 'forwards',
-//   },
-//   new: {
-//     name: 'fadeOut',
-//     duration: '0.3s',
-//     easing: 'linear',
-//     fillMode: 'backwards',
-//   },
-// }
-
-// const myFade = {
-//   forwards: anim,
-//   backwards: anim,
-// }
 ---
 
 <figure>
@@ -58,23 +38,15 @@ if (!images[`${pathPrefix}${src}`]) throw new Error(`"${src}" does not exist`)
     margin: 0;
   }
   figure {
-    display: grid;
-    grid-template-columns: 1fr 60px;
+    /* display: grid; */
+    /* grid-template-columns: 1fr 60px; */
     margin-bottom: 2rem;
     /* border-bottom: 1px solid #000;
     border-right: 1px solid #000; */
   }
 
   img {
-    /* grid-template-rows: 3; */
-    width: 100%;
-    /* flex-grow: 1; */
-  }
-
-  figcaption {
-    /* margin-top: 8px; */
-    /* writing-mode: vertical-rl;
-    text-orientation: mixed; */
+    width: 75%;
   }
 
   span {
@@ -84,15 +56,5 @@ if (!images[`${pathPrefix}${src}`]) throw new Error(`"${src}" does not exist`)
     text-transform: uppercase;
     padding: var(--sp-xs);
     font-size: var(--sp-xs);
-  }
-
-  .caption {
-    writing-mode: vertical-rl;
-    text-orientation: mixed;
-    display: grid;
-    text-align: center;
-    /* grid-template-rows: 3; */
-    grid-template-columns: 1fr 1fr auto;
-    /* align-items: center; */
   }
 </style>
