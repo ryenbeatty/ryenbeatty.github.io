@@ -3,6 +3,7 @@ import 'styles/global.css'
 
 import CommonHead from 'components/CommonHead.astro'
 import Footer from 'components/Footer.astro'
+import GridTrailBackground from 'components/GridTrailBackground.astro'
 
 const { frontmatter } = Astro.props
 ---
@@ -41,7 +42,8 @@ const { frontmatter } = Astro.props
   </head>
 
   <body class="flex flex-col min-h-screen max-w-screen-lg mx-auto">
-    <div class="grow">
+    <GridTrailBackground />
+    <div class="grow relative z-[1]">
       <slot />
     </div>
 

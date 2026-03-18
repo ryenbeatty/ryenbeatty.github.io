@@ -1,0 +1,229 @@
+---
+
+---
+
+<div class="grid-trail-wrap" aria-hidden="true">
+  <canvas id="grid-trail-canvas" class="grid-trail-canvas"></canvas>
+</div>
+
+<script>
+  ;(function () {
+    const DEFAULTS = {
+      spacing: 26,
+      dotsize: 1.4,
+      dotopacity: 0.08,
+      brush: 10,
+      noise: 0.12,
+      falloff: 0.4,
+      shape: 'plus',
+      arm: 2.5,
+      armw: 0.2,
+      bright: 160,
+      glow: 0,
+      decay: 800,
+      // Activated cross: null = use theme --site-color; or hex e.g. '#d4a574'
+      markColor: null,
+      markOpacity: 0.3,
+    }
+
+    let dots = []
+    let mouse = { x: -9999, y: -9999 }
+    let W = 0,
+      H = 0
+
+    const canvas = document.getElementById('grid-trail-canvas')
+    if (!canvas) return
+
+    const ctx = canvas.getContext('2d')
+    const p = { ...DEFAULTS }
+
+    function parseColor(str) {
+      if (!str) return { r: 0, g: 0, b: 0 }
+      str = str.trim()
+      const rgb = str.match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/)
+      if (rgb) return { r: +rgb[1], g: +rgb[2], b: +rgb[3] }
+      const hex6 = str.match(/^#([0-9a-fA-F]{6})$/)
+      if (hex6) {
+        const h = hex6[1]
+        return {
+          r: parseInt(h.slice(0, 2), 16),
+          g: parseInt(h.slice(2, 4), 16),
+          b: parseInt(h.slice(4, 6), 16),
+        }
+      }
+      const hex3 = str.match(/^#([0-9a-fA-F]{3})$/)
+      if (hex3) {
+        const h = hex3[1]
+        return {
+          r: parseInt(h[0] + h[0], 16),
+          g: parseInt(h[1] + h[1], 16),
+          b: parseInt(h[2] + h[2], 16),
+        }
+      }
+      return { r: 0, g: 0, b: 0 }
+    }
+
+    function getThemeColors() {
+      const root = document.documentElement
+      const s = getComputedStyle(root)
+      return {
+        bg: s.getPropertyValue('--wash-color').trim(),
+        text: s.getPropertyValue('--text-color').trim(),
+        mark: s.getPropertyValue('--site-color').trim(),
+      }
+    }
+
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      W = window.innerWidth
+      const Hwin = window.innerHeight
+      canvas.width = W * dpr
+      canvas.height = Hwin * dpr
+      canvas.style.width = W + 'px'
+      canvas.style.height = Hwin + 'px'
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+      ctx.scale(dpr, dpr)
+      H = Hwin
+      buildGrid()
+    }
+
+    function buildGrid() {
+      dots = []
+      const offX = (W % p.spacing) / 2
+      const offY = (H % p.spacing) / 2
+      const cols = Math.ceil(W / p.spacing) + 1
+      const rows = Math.ceil(H / p.spacing) + 1
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          dots.push({
+            x: offX + c * p.spacing,
+            y: offY + r * p.spacing,
+            activation: 0,
+            activatedAt: 0,
+          })
+        }
+      }
+    }
+
+    function update(now) {
+      const mx = mouse.x,
+        my = mouse.y
+
+      for (let i = 0; i < dots.length; i++) {
+        const d = dots[i]
+        const dx = d.x - mx
+        const dy = d.y - my
+        const noiseFactor = 1 + p.noise * Math.sin(d.x * 0.31 + d.y * 0.19)
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        const effectiveRadius = p.brush * noiseFactor
+
+        if (dist < effectiveRadius) {
+          const newAct = Math.max(
+            d.activation,
+            1 - (dist / effectiveRadius) * p.falloff,
+          )
+          if (newAct > d.activation + 0.04) {
+            d.activation = newAct
+            d.activatedAt = now
+          }
+        } else {
+          const elapsed = now - d.activatedAt
+          if (d.activation > 0 && elapsed > 0) {
+            d.activation = Math.max(0, 1 - elapsed / p.decay)
+          }
+        }
+      }
+    }
+
+    function drawMark(x, y, act, mk) {
+      const size = p.dotsize + act * 2.2
+      const alpha = Math.min(1, (0.15 + act * 0.85) * p.markOpacity)
+      const brightnessFactor = ((p.bright - 180) * act + 180) / 255
+      const cr = `rgba(${Math.round(mk.r * brightnessFactor)},${Math.round(mk.g * brightnessFactor)},${Math.round(mk.b * brightnessFactor)},${alpha})`
+
+      if (p.shape === 'plus') {
+        const arm = size * p.arm,
+          w = size * p.armw
+        ctx.fillStyle = cr
+        ctx.fillRect(x - arm, y - w, arm * 2, w * 2)
+        ctx.fillRect(x - w, y - arm, w * 2, arm * 2)
+      }
+
+      if (p.glow > 0 && act > 0.5) {
+        const gr = ctx.createRadialGradient(x, y, 0, x, y, size * 3)
+        gr.addColorStop(0, `rgba(${mk.r},${mk.g},${mk.b},${act * p.glow})`)
+        gr.addColorStop(1, `rgba(${mk.r},${mk.g},${mk.b},0)`)
+        ctx.beginPath()
+        ctx.arc(x, y, size * 3, 0, Math.PI * 2)
+        ctx.fillStyle = gr
+        ctx.fill()
+      }
+    }
+
+    function draw() {
+      const colors = getThemeColors()
+      const bg = parseColor(colors.bg)
+      const text = parseColor(colors.text)
+      const markColorValue = p.markColor != null ? p.markColor : colors.mark
+      const mk = parseColor(markColorValue)
+
+      ctx.fillStyle = `rgb(${bg.r},${bg.g},${bg.b})`
+      ctx.fillRect(0, 0, W, H)
+
+      for (let i = 0; i < dots.length; i++) {
+        const d = dots[i]
+        if (d.activation < 0.02) {
+          ctx.beginPath()
+          ctx.arc(d.x, d.y, p.dotsize, 0, Math.PI * 2)
+          ctx.fillStyle = `rgba(${text.r},${text.g},${text.b},${p.dotopacity})`
+          ctx.fill()
+        } else {
+          drawMark(d.x, d.y, d.activation, mk)
+        }
+      }
+    }
+
+    function loop() {
+      if (!document.hidden) {
+        const now = performance.now()
+        update(now)
+        draw()
+      }
+      requestAnimationFrame(loop)
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      mouse.x = e.clientX
+      mouse.y = e.clientY
+    })
+
+    document.addEventListener('mouseout', (e) => {
+      if (
+        !e.relatedTarget ||
+        !document.documentElement.contains(e.relatedTarget)
+      ) {
+        mouse.x = -9999
+        mouse.y = -9999
+      }
+    })
+
+    resize()
+    window.addEventListener('resize', resize)
+    requestAnimationFrame(loop)
+  })()
+</script>
+
+<style>
+  .grid-trail-wrap {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .grid-trail-canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+</style>
