@@ -56,8 +56,8 @@
     opacity: 0.8;
   }
 
-  /* Dark mode: icon uses warm offwhite */
+  /* Dark mode: icon uses theme cream (Australian dusk) */
   :global([data-theme='dark']) .theme-toggle {
-    color: #f7f5f2;
+    color: var(--text-color);
   }
 </style>
