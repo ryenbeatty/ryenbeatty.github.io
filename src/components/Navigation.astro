@@ -1,5 +1,6 @@
 ---
 import clsx from 'clsx'
+import ThemeToggle from './ThemeToggle.svelte'
 
 const pathname = new URL(Astro.request.url).pathname
 const currentPath = pathname.slice(1)
@@ -7,71 +8,82 @@ const currentPath = pathname.slice(1)
 const { variant } = Astro.props
 ---
 
-<ul class="list-none m-0 pb-8">
-  <li>
-    <a
-      class={clsx('link', currentPath === '' ? 'active' : '')}
-      href="/#work"
-      data-astro-prefetch
-    >
-      Work
-    </a>
-  </li>
+<nav class="nav-wrapper">
+  <ul class="list-none m-0 py-2 flex flex-row">
+    <!-- <li>
+      <a
+        class={clsx('link', currentPath === '' ? 'active' : '')}
+        href="/#work"
+        data-astro-prefetch
+      >
+        Work
+      </a>
+    </li> -->
 
-  <li>
-    <a
-      class={clsx('link', currentPath === 'desk' ? 'active' : '')}
-      href="/desk"
-      data-astro-prefetch
-    >
-      Desk
-    </a>
-  </li>
+    <li>
+      <a
+        class={clsx('link', currentPath === 'desk' ? 'active' : '')}
+        href="/desk"
+        data-astro-prefetch
+      >
+        Lately
+      </a>
+    </li>
 
-  <li>
-    <a
-      class={clsx('link', currentPath === 'writing' ? 'active' : '')}
-      href="/writing"
-      data-astro-prefetch
-    >
-      Writing
-    </a>
-  </li>
+    <li>
+      <a
+        class={clsx('link', currentPath === 'writing' ? 'active' : '')}
+        href="/writing"
+        data-astro-prefetch
+      >
+        Writing
+      </a>
+    </li>
 
-  <li>
-    <a
-      class={clsx('link', currentPath === 'about' ? 'active' : '')}
-      href="/about"
-      data-astro-prefetch>About</a
-    >
-  </li>
+    <li>
+      <a
+        class={clsx('link', currentPath === 'about' ? 'active' : '')}
+        href="/about"
+        data-astro-prefetch
+      >
+        About
+      </a>
+    </li>
+    <div class="theme-toggle-wrap">
+      <ThemeToggle client:only="svelte" />
+    </div>
+  </ul>
 
-  <li>
-    <a
-      class={clsx('link', currentPath === 'now' ? 'active' : '')}
-      href="/now"
-      data-astro-prefetch>Now</a
-    >
-  </li>
-</ul>
+  <style>
+    .nav-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
 
-<style>
-  ul {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    margin: 0;
-  }
+    ul {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      margin: 0;
+    }
 
-  li {
-    list-style: none;
-    padding-right: 15px;
-  }
+    li {
+      list-style: none;
+      padding-right: 15px;
+    }
 
-  .active {
-    font-weight: bold;
-    text-decoration: underline;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 3px;
-  }
-</style>
+    .theme-toggle-wrap {
+      margin-left: auto;
+    }
+
+    .active {
+      font-weight: bold;
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+    }
+  </style>
+</nav>

@@ -18,7 +18,7 @@
   /* Light theme defaults */
   --text-color: var(--gray30);
   --meta-color: var(--gray30);
-  --wash-color: var(--gray20);
+  --wash-color: #f7f5f2; /* warm white */
   --code-wash: var(--gray05);
   --code-color: #222;
   --site-color: #dd425c;
@@ -69,7 +69,6 @@ body {
   margin: 0 auto;
   width: 100%;
   max-width: 120ch;
-  padding: 1rem;
 }
 
 a {
@@ -85,7 +84,7 @@ html {
 :root[data-theme='dark'] {
   --text-color: var(--gray00);
   --meta-color: var(--gray10);
-  --wash-color: var(--gray35);
+  --wash-color: #141414;
   --code-wash: var(--gray40);
   --code-color: var(--gray05);
 }
@@ -241,7 +240,7 @@ a {
 }
 
 .link {
-  font-size: var(--sp-s);
+  font-size: var(--step--1);
   text-decoration: none;
   color: var(--text-color);
   border-color: var(--text-color);

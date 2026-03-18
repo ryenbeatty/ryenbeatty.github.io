@@ -11,14 +11,6 @@ const projects = await getCollection('project').then((p) =>
     projects.map((p) => (
       <div class="grid grid-cols-8 gap-8 w-full">
         <div class="col-span-4 flex flex-col gap-4">
-          <div class="flex flex-row gap-2">
-            {p.data.labels.map((l) => (
-              <span class="text-xs border border-gray-500 px-2 py-1 rounded-md font-mono tracking-wide">
-                {l}
-              </span>
-            ))}
-          </div>
-
           <a
             href={`/work/${p.slug}`}
             data-astro-prefetch="load"
@@ -29,7 +21,6 @@ const projects = await getCollection('project').then((p) =>
           <p class="text-base leading-relaxed">{p.data.description}</p>
 
           <div class="flex flex-row items-center gap-2 mt-2">
-            <span class="text-sm">🔗</span>
             <a
               href={`/work/${p.slug}`}
               data-astro-prefetch="load"
@@ -38,6 +29,13 @@ const projects = await getCollection('project').then((p) =>
               View project
             </a>
           </div>
+          {/* <div class="flex flex-row gap-2">
+            {p.data.labels.map((l) => (
+              <span class="text-xs border border-gray-500 px-2 py-1 rounded-md font-mono ">
+                {l}
+              </span>
+            ))}
+          </div> */}
         </div>
 
         <div class="col-span-4 h-[300px] bg-black rounded-lg overflow-hidden" />

@@ -7,7 +7,8 @@
 }
 
 :root {
-  --font-serif: 'Untitled Sans';
+  /* Named "serif" for legacy reasons; Untitled Sans is sans-serif. Include fallback so we don't get browser default (often serif) when the font isn't loaded. */
+  --font-serif: 'Untitled Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono: 'Space Mono', Menlo, Consolas, Monaco, Liberation Mono,
     Lucida Console, monospace;
 
