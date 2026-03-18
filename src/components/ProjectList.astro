@@ -14,7 +14,7 @@ const projects = await getCollection('project').then((p) =>
           <a
             href={`/work/${p.slug}`}
             data-astro-prefetch="load"
-            class="text-xl font-medium hover:underline decoration-2 underline-offset-4"
+            class="font-medium hover:underline decoration-2 underline-offset-4"
           >
             {p.data.title}
           </a>
@@ -24,7 +24,7 @@ const projects = await getCollection('project').then((p) =>
             <a
               href={`/work/${p.slug}`}
               data-astro-prefetch="load"
-              class="text-sm font-medium hover:underline decoration-2 underline-offset-4"
+              class="text-xs font-medium hover:underline decoration-2 underline-offset-4"
             >
               View project
             </a>

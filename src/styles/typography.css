@@ -1,16 +1,41 @@
+/* Soehne by Klim — Leicht (300), Buch (400), Kräftig (500). Add .woff2/.woff to public/fonts/ */
 @font-face {
   font-family: 'Soehne';
-  src: url('/fonts/DistantGalaxy.woff') format('woff');
-  font-weight: normal;
+  src:
+    url('/fonts/soehne-leicht.woff2') format('woff2'),
+    url('/fonts/soehne-leicht.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Soehne';
+  src:
+    url('/fonts/soehne-buch.woff2') format('woff2'),
+    url('/fonts/soehne-buch.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Soehne';
+  src:
+    url('/fonts/soehne-kraeftig.woff2') format('woff2'),
+    url('/fonts/soehne-kraeftig.woff') format('woff');
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
 :root {
-  /* Named "serif" for legacy reasons; Untitled Sans is sans-serif. Include fallback so we don't get browser default (often serif) when the font isn't loaded. */
-  --font-serif: 'Untitled Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-mono: 'Space Mono', Menlo, Consolas, Monaco, Liberation Mono,
+  --font-serif: 'Soehne', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif;
+  --font-mono: 'Geist Mono', Menlo, Consolas, Monaco, Liberation Mono,
     Lucida Console, monospace;
+  /* Soehne roles: body/grid hint = Leicht (300), nav/labels/captions = Buch (400), headlines/name = Kräftig (500) */
+  --font-body: var(--font-serif);
+  --font-ui: var(--font-serif);
+  --font-display: var(--font-serif);
 
   --step--2: clamp(0.7813rem, 0.7747rem + 0.0326vi, 0.8rem);
   --step--1: clamp(0.9375rem, 0.9158rem + 0.1087vi, 1rem);
@@ -23,22 +48,8 @@
 }
 
 html {
-  /* https://systemfontstack.com/ */
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    avenir next,
-    avenir,
-    segoe ui,
-    helvetica neue,
-    Cantarell,
-    Ubuntu,
-    roboto,
-    noto,
-    helvetica,
-    arial,
-    sans-serif;
-  font-weight: 400;
+  font-family: var(--font-serif);
+  font-weight: 300; /* Leicht — body default */
   font-style: normal;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -47,6 +58,36 @@ html {
 
 body {
   line-height: 1.5;
+  font-weight: 300; /* Soehne Leicht for body and grid hint text */
+}
+
+/* Headlines and name: Soehne Kräftig (500) */
+h1,
+.h1,
+h2,
+.h2,
+h3,
+.h3,
+h4,
+.h4,
+h5,
+.h5,
+h6,
+.h6,
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+/* Navigation, labels, captions, UI chrome: Soehne Buch (400) */
+nav,
+.font-ui,
+figcaption,
+.caption,
+label,
+th {
+  font-family: var(--font-ui);
+  font-weight: 400;
 }
 
 code {
@@ -63,7 +104,7 @@ h4,
 h5,
 h6 {
   margin: 0.6em 0;
-  font-weight: normal;
+  font-weight: 500; /* Soehne Kräftig */
 }
 
 h1,
@@ -94,4 +135,15 @@ h4,
 p {
   --font-size: var(--step--1);
   font-size: var(--step--1);
+}
+
+/* Lead/intro — use on wrapper div; inner p inherits size so MDX only emits one paragraph */
+.lead,
+p.lead {
+  font-size: var(--step-2);
+  line-height: 1.3;
+}
+.lead p {
+  font-size: inherit;
+  line-height: inherit;
 }
