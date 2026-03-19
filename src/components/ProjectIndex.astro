@@ -1,0 +1,58 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getCollection } from 'astro:content'
+import { marked } from 'marked'
+import ProjectSectionRow from './ProjectSectionRow.astro'
+
+const raw = await getCollection('project')
+const projects = raw.sort((a: CollectionEntry<'project'>, b: CollectionEntry<'project'>) => {
+  const orderA = a.data.order ?? 999
+  const orderB = b.data.order ?? 999
+  if (orderA !== orderB) return orderA - orderB
+  return b.data.date.getTime() - a.data.date.getTime()
+})
+
+// One row per project: section one only (title + description + first section media)
+const indexRows = await Promise.all(
+  projects.map(async (p) => {
+    const sections = p.data.sections ?? []
+    const raw = p.data.description
+    const bodyHtml =
+      typeof raw === 'string' ? await Promise.resolve(marked(raw)) : String(raw)
+    return {
+      slug: p.slug,
+      title: p.data.title,
+      bodyHtml: bodyHtml as string,
+      media: sections[0]?.media ?? [],
+    }
+  })
+)
+---
+
+<section class="project-index" aria-label="Projects">
+  {indexRows.map((row, i) => (
+    <>
+      {i > 0 && <hr class="project-index__divider" />}
+      <ProjectSectionRow
+        title={row.title}
+        titleHref={`/work/${row.slug}`}
+        bodyHtml={row.bodyHtml}
+        media={row.media}
+      />
+    </>
+  ))}
+</section>
+
+<style>
+  .project-index {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 4rem;
+  }
+
+  .project-index__divider {
+    margin: 0;
+    border: none;
+    border-top: 1px solid var(--color-border, #e5e5e5);
+  }
+</style>

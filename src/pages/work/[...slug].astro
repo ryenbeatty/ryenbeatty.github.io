@@ -2,8 +2,10 @@
 import Layout from 'layouts/Primary.astro'
 import ProtectedLayout from 'layouts/Protected.astro'
 import ProjectHero from 'components/ProjectHero.astro'
+import ProjectSectionRow from 'components/ProjectSectionRow.astro'
 
 import { getCollection } from 'astro:content'
+import { marked } from 'marked'
 
 export async function getStaticPaths() {
   const content = await getCollection('project')
@@ -14,7 +16,32 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props
-const { Content } = await entry.render()
+const sections = entry.data.sections ?? []
+const desc = entry.data.description
+const firstBodyHtml =
+  typeof desc === 'string' ? await Promise.resolve(marked(desc)) : String(desc)
+const restRows = await Promise.all(
+  sections.slice(1).map(async (sec) => ({
+    bodyHtml:
+      typeof sec.text === 'string'
+        ? (await Promise.resolve(marked(sec.text))) as string
+        : String(sec.text),
+    media: sec.media,
+  }))
+)
+interface SectionRowProps {
+  title?: string
+  bodyHtml: string
+  media: { src: string; type: 'image' | 'video' | 'vidstack'; alt?: string; poster?: string }[]
+}
+const sectionRows: SectionRowProps[] = [
+  {
+    title: entry.data.title,
+    bodyHtml: firstBodyHtml as string,
+    media: sections[0]?.media ?? [],
+  },
+  ...restRows,
+]
 
 const pageTitle = `${entry.data.title} Case Study`
 const frontmatter = { ...entry.data, title: pageTitle }
@@ -30,10 +57,14 @@ const frontmatter = { ...entry.data, title: pageTitle }
           heroImage={entry.data['hero-image']}
         />
 
-        <div class="max-w-3xl mx-auto px-4 py-8">
-          <div class="prose prose-lg dark:prose-invert max-w-none">
-            <Content />
-          </div>
+        <div class="project-sections">
+          {sectionRows.map((row) => (
+            <ProjectSectionRow
+              title={row.title}
+              bodyHtml={row.bodyHtml}
+              media={row.media}
+            />
+          ))}
         </div>
       </Layout>
     </ProtectedLayout>
@@ -45,10 +76,14 @@ const frontmatter = { ...entry.data, title: pageTitle }
         heroImage={entry.data['hero-image']}
       />
 
-      <div class="max-w-3xl mx-auto px-4 py-8">
-        <div class="prose prose-lg dark:prose-invert max-w-none">
-          <Content />
-        </div>
+      <div class="project-sections">
+        {sectionRows.map((row) => (
+          <ProjectSectionRow
+            title={row.title}
+            bodyHtml={row.bodyHtml}
+            media={row.media}
+          />
+        ))}
       </div>
     </Layout>
   )

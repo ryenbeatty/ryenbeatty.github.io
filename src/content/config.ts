@@ -15,8 +15,8 @@ const article = defineCollection({
 
 // Projects — order for homepage; sections = sticky text blocks + media (left/right layout)
 const projectSectionMedia = z.object({
-  src: z.string(), // image/video: path or URL; loom: Loom share URL; vidstack: video URL for Media/VideoLayout player
-  type: z.enum(['image', 'video', 'loom', 'vidstack']),
+  src: z.string(), // image/video: path or URL; vidstack: video URL for Media/VideoLayout player
+  type: z.enum(['image', 'video', 'vidstack']),
   alt: z.string().optional(),
   poster: z.string().optional(), // optional poster image URL (e.g. for vidstack)
 })
