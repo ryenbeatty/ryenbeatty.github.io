@@ -26,6 +26,7 @@
     "astro-robots-txt": "^1.0.0",
     "astro-seo": "^0.8.4",
     "clsx": "^2.1.1",
+    "marked": "^15.0.0",
     "date-fns": "^3.6.0",
     "media-icons": "^0.10.0",
     "rss-parser": "^3.13.0",

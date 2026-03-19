@@ -1,0 +1,135 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getCollection } from 'astro:content'
+import { marked } from 'marked'
+import SectionRow from './SectionRow.astro'
+
+const raw = await getCollection('project')
+const projects = raw.sort((a: CollectionEntry<'project'>, b: CollectionEntry<'project'>) => {
+  const orderA = a.data.order ?? 999
+  const orderB = b.data.order ?? 999
+  if (orderA !== orderB) return orderA - orderB
+  return b.data.date.getTime() - a.data.date.getTime()
+})
+
+// Build rows per project in frontmatter (no const/let in template)
+interface SectionRowData {
+  title?: string
+  bodyHtml: string
+  media: { src: string; type: 'image' | 'video' | 'loom' | 'vidstack'; alt?: string; poster?: string }[]
+}
+const projectRows: SectionRowData[][] = projects.map((p) => {
+  const sections = p.data.sections ?? []
+  const first: SectionRowData = {
+    title: p.data.title,
+    bodyHtml: marked(p.data.description),
+    media: sections[0]?.media ?? [],
+  }
+  const rest: SectionRowData[] = sections.slice(1).map((sec) => ({
+    bodyHtml: marked(sec.text),
+    media: sec.media,
+  }))
+  return [first, ...rest]
+})
+---
+
+<section class="home-sections" aria-label="Projects">
+  {projectRows.map((rows, projectIndex) => (
+    <>
+      {projectIndex > 0 && <hr class="home-sections__divider" />}
+      <div class="home-sections__project">
+        <SectionRow
+          title={rows[0].title}
+          bodyHtml={rows[0].bodyHtml}
+          media={rows[0].media}
+        />
+        {rows.length > 1 && (
+          <>
+            <div
+              id={`project-more-${projectIndex}`}
+              class="home-sections__more"
+              hidden
+              data-project-more
+              aria-hidden="true"
+            >
+              {rows.slice(1).map((row) => (
+                <SectionRow bodyHtml={row.bodyHtml} media={row.media} />
+              ))}
+            </div>
+            <div class="home-sections__toggle">
+              <button
+                type="button"
+                class="home-sections__show-more"
+                data-project-toggle
+                aria-expanded="false"
+                aria-controls={`project-more-${projectIndex}`}
+              >
+                Show more
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  ))}
+</section>
+
+<script>
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as Element).closest?.('[data-project-toggle]')
+    if (!btn) return
+    const project = btn.closest('.home-sections__project')
+    const more = project?.querySelector('[data-project-more]')
+    if (!more) return
+    const isHidden = more.hasAttribute('hidden')
+    if (isHidden) {
+      more.removeAttribute('hidden')
+      more.setAttribute('aria-hidden', 'false')
+      btn.textContent = 'Show less'
+      btn.setAttribute('aria-expanded', 'true')
+    } else {
+      more.setAttribute('hidden', '')
+      more.setAttribute('aria-hidden', 'true')
+      btn.textContent = 'Show more'
+      btn.setAttribute('aria-expanded', 'false')
+    }
+  })
+</script>
+
+<style>
+  .home-sections {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 4rem;
+  }
+
+  .home-sections__divider {
+    margin: 0;
+    border: none;
+    border-top: 1px solid var(--color-border, #e5e5e5);
+  }
+
+  .home-sections__project {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .home-sections__toggle {
+    padding: 0.5rem 0 2rem;
+  }
+
+  .home-sections__show-more {
+    font: inherit;
+    color: var(--color-link, #4e9cf6);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+  }
+
+  .home-sections__show-more:hover {
+    text-decoration: none;
+  }
+</style>

@@ -1,83 +1,80 @@
 <script lang="ts">
-  import FullscreenButton from '../buttons/FullscreenButton.svelte'
-  import MuteButton from '../buttons/MuteButton.svelte'
-  import PlayButton from '../buttons/PlayButton.svelte'
-  import Gestures from '../Gestures.svelte'
+  import type { MediaPlayerElement } from 'vidstack/elements'
 
-  import TimeSlider from '../sliders/TimeSlider.svelte'
-  import VolumeSlider from '../sliders/VolumeSlider.svelte'
-</script>
+  export let player: MediaPlayerElement | undefined = undefined
 
-<Gestures />
+  let muted = true
+  let x = 0
+  let y = 0
+  let hover = false
 
-<media-controls class="controls">
-  <div class="spacer" />
-
-  <media-controls-group class="controls-group">
-    <PlayButton tooltipPlacement="top start" />
-    <TimeSlider />
-    <MuteButton tooltipPlacement="top" />
-    <VolumeSlider />
-    <FullscreenButton tooltipPlacement="top end" />
-  </media-controls-group>
-</media-controls>
-
-<style lang="postcss">
-  .controls {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10;
-    opacity: 0;
-    transition: opacity 0.2s ease-out;
-
-    &[data-visible] {
-      opacity: 1;
-      background-image: linear-gradient(
-        to top,
-        rgb(0 0 0 / 0.5),
-        10%,
-        transparent,
-        95%,
-        rgb(0 0 0 / 0.3)
-      );
+  function handleClick() {
+    const p = player
+    if (!p) return
+    if (muted) {
+      p.muted = false
+      p.currentTime = 0
+      p.volume = 1
+      p.play()
+      muted = false
+    } else {
+      p.muted = true
+      muted = true
     }
   }
 
-  .controls-group {
-    display: flex;
-    align-items: center;
-    align-content: center;
-    width: 100%;
+  function handleMouseMove(e: MouseEvent) {
+    x = e.clientX
+    y = e.clientY
   }
+</script>
 
-  .controls-group {
-    padding-inline: 8px;
-  }
+<div class="video-layout">
+  <div
+    class="mute-overlay"
+    role="button"
+    tabindex="0"
+    on:click={handleClick}
+    on:keydown={(e) => e.key === 'Enter' && handleClick()}
+    on:mouseenter={() => (hover = true)}
+    on:mouseleave={() => (hover = false)}
+    on:mousemove={handleMouseMove}
+    aria-label={muted ? 'Unmute' : 'Mute'}
+  >
+    {#if hover}
+      <span class="mute-overlay__cursor" style="left: {x}px; top: {y}px;">{muted ? '🔇' : '🔊'}</span>
+    {/if}
+  </div>
+</div>
 
-  .controls-group:last-child {
-    margin-top: -4px;
-    padding-bottom: 8px;
-  }
-
-  .spacer {
-    flex: 1 1 0%;
+<style lang="postcss">
+  .video-layout {
+    position: absolute;
+    inset: 0;
     pointer-events: none;
   }
 
-  .controls :global(.media-button) {
-    margin-right: 2.5px;
+  .video-layout .mute-overlay {
+    pointer-events: auto;
   }
 
-  .controls :global(media-mute-button) {
-    margin-left: -2.5px;
-    margin-right: -5px !important;
+  .mute-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    cursor: none;
   }
 
-  .controls :global(media-fullscreen-button) {
-    margin-right: 0 !important;
+  .mute-overlay:focus {
+    outline: none;
+  }
+
+  .mute-overlay__cursor {
+    position: fixed;
+    font-size: 1.5rem;
+    line-height: 1;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
   }
 </style>
