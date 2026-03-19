@@ -35,6 +35,7 @@ const project = defineCollection({
     password: z.string().optional(),
     'header-background': z.string().optional(),
     'hero-image': z.string().optional(),
+    thumbnail: z.string().optional(), // image path for next-project nav tab
     sections: z.array(projectSection).optional(), // [{ text, media }, ...]; first row uses title+description as text
   }),
 })

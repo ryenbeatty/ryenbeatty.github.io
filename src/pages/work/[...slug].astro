@@ -1,9 +1,11 @@
 ---
-import Layout from 'layouts/Primary.astro'
-import ProtectedLayout from 'layouts/Protected.astro'
+import NextProjectNav from 'components/NextProjectNav.astro'
 import ProjectHero from 'components/ProjectHero.astro'
 import ProjectSectionRow from 'components/ProjectSectionRow.astro'
+import Layout from 'layouts/Primary.astro'
+import ProtectedLayout from 'layouts/Protected.astro'
 
+import type { CollectionEntry } from 'astro:content'
 import { getCollection } from 'astro:content'
 import { marked } from 'marked'
 
@@ -16,6 +18,21 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props
+const allProjects = await getCollection('project')
+const sorted = [...allProjects].sort(
+  (a: CollectionEntry<'project'>, b: CollectionEntry<'project'>) => {
+    const orderA = a.data.order ?? 999
+    const orderB = b.data.order ?? 999
+    if (orderA !== orderB) return orderA - orderB
+    return b.data.date.getTime() - a.data.date.getTime()
+  },
+)
+const currentIndex = sorted.findIndex((p) => p.slug === entry.slug)
+const nextProject =
+  currentIndex >= 0 && currentIndex < sorted.length - 1
+    ? sorted[currentIndex + 1]
+    : null
+const prevProject = currentIndex > 0 ? sorted[currentIndex - 1] : null
 const sections = entry.data.sections ?? []
 const desc = entry.data.description
 const firstBodyHtml =
@@ -24,15 +41,20 @@ const restRows = await Promise.all(
   sections.slice(1).map(async (sec) => ({
     bodyHtml:
       typeof sec.text === 'string'
-        ? (await Promise.resolve(marked(sec.text))) as string
+        ? ((await Promise.resolve(marked(sec.text))) as string)
         : String(sec.text),
     media: sec.media,
-  }))
+  })),
 )
 interface SectionRowProps {
   title?: string
   bodyHtml: string
-  media: { src: string; type: 'image' | 'video' | 'vidstack'; alt?: string; poster?: string }[]
+  media: {
+    src: string
+    type: 'image' | 'video' | 'vidstack'
+    alt?: string
+    poster?: string
+  }[]
 }
 const sectionRows: SectionRowProps[] = [
   {
@@ -43,7 +65,7 @@ const sectionRows: SectionRowProps[] = [
   ...restRows,
 ]
 
-const pageTitle = `${entry.data.title} Case Study`
+const pageTitle = `${entry.data.title} 〰︎ Ryen Beatty 〰︎ Design engineer`
 const frontmatter = { ...entry.data, title: pageTitle }
 ---
 
@@ -66,6 +88,21 @@ const frontmatter = { ...entry.data, title: pageTitle }
             />
           ))}
         </div>
+        {nextProject ? (
+          <NextProjectNav
+            href={`/work/${nextProject.slug}`}
+            title={nextProject.data.title}
+            thumbnail={nextProject.data.thumbnail}
+            side="right"
+          />
+        ) : prevProject ? (
+          <NextProjectNav
+            href={`/work/${prevProject.slug}`}
+            title={prevProject.data.title}
+            thumbnail={prevProject.data.thumbnail}
+            side="left"
+          />
+        ) : null}
       </Layout>
     </ProtectedLayout>
   ) : (
@@ -85,6 +122,21 @@ const frontmatter = { ...entry.data, title: pageTitle }
           />
         ))}
       </div>
+      {nextProject ? (
+        <NextProjectNav
+          href={`/work/${nextProject.slug}`}
+          title={nextProject.data.title}
+          thumbnail={nextProject.data.thumbnail}
+          side="right"
+        />
+      ) : prevProject ? (
+        <NextProjectNav
+          href={`/work/${prevProject.slug}`}
+          title={prevProject.data.title}
+          thumbnail={prevProject.data.thumbnail}
+          side="left"
+        />
+      ) : null}
     </Layout>
   )
 }
