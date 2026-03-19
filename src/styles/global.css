@@ -34,6 +34,9 @@
   --mark-color: rgba(255, 200, 0, 0.15);
   --highlight-color: #f0e4cc; /* light mode text selection – warm, not dark */
   --hover-color: var(--site-color);
+  /* Grid trail: dot opacity; cross opacity (cross colour = --text-color by default) */
+  --grid-trail-dot-opacity: 0.08;
+  --grid-trail-mark-opacity: 0.3;
   --focus-ring: 2px solid var(--site-color);
   --focus-ring-offset: 2px;
 
@@ -104,9 +107,16 @@ html {
   --code-wash: #252035;
   --code-color: #e8e2d8;
   --site-color: #d4a574; /* dusk amber / burnt horizon */
-  --highlight-color: color-mix(in srgb, var(--wash-color) 65%, white 35%); /* selection: wash, lighter */
+  --highlight-color: color-mix(
+    in srgb,
+    var(--wash-color) 65%,
+    white 35%
+  ); /* selection: wash, lighter */
   --hover-color: #e8c9a0;
   --focus-ring: 2px solid var(--site-color);
+  /* Grid trail: dot opacity; cross opacity */
+  --grid-trail-dot-opacity: 0.08;
+  --grid-trail-mark-opacity: 0.8;
 }
 
 /* Focus visible: keyboard users get a clear focus ring (WCAG 2.4.7) */

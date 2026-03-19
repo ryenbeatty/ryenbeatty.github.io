@@ -66,10 +66,18 @@
     function getThemeColors() {
       const root = document.documentElement
       const s = getComputedStyle(root)
+      const dotOpacityStr = s.getPropertyValue('--grid-trail-dot-opacity').trim()
+      const dotOpacity = dotOpacityStr ? parseFloat(dotOpacityStr) : p.dotopacity
+      const markOpacityStr = s.getPropertyValue('--grid-trail-mark-opacity').trim()
+      const markOpacity = markOpacityStr ? parseFloat(markOpacityStr) : p.markOpacity
+      const markColor = s.getPropertyValue('--grid-trail-mark-color').trim()
+      const textColor = s.getPropertyValue('--text-color').trim()
       return {
         bg: s.getPropertyValue('--wash-color').trim(),
-        text: s.getPropertyValue('--text-color').trim(),
-        mark: s.getPropertyValue('--site-color').trim(),
+        text: textColor,
+        mark: markColor || textColor,
+        dotOpacity: Number.isFinite(dotOpacity) ? dotOpacity : p.dotopacity,
+        markOpacity: Number.isFinite(markOpacity) ? markOpacity : p.markOpacity,
       }
     }
 
@@ -135,9 +143,10 @@
       }
     }
 
-    function drawMark(x, y, act, mk) {
+    function drawMark(x, y, act, mk, markOpacity) {
       const size = p.dotsize + act * 2.2
-      const alpha = Math.min(1, (0.15 + act * 0.85) * p.markOpacity)
+      const opacity = markOpacity != null ? markOpacity : p.markOpacity
+      const alpha = Math.min(1, (0.15 + act * 0.85) * opacity)
       const brightnessFactor = ((p.bright - 180) * act + 180) / 255
       const cr = `rgba(${Math.round(mk.r * brightnessFactor)},${Math.round(mk.g * brightnessFactor)},${Math.round(mk.b * brightnessFactor)},${alpha})`
 
@@ -175,10 +184,10 @@
         if (d.activation < 0.02) {
           ctx.beginPath()
           ctx.arc(d.x, d.y, p.dotsize, 0, Math.PI * 2)
-          ctx.fillStyle = `rgba(${text.r},${text.g},${text.b},${p.dotopacity})`
+          ctx.fillStyle = `rgba(${text.r},${text.g},${text.b},${colors.dotOpacity})`
           ctx.fill()
         } else {
-          drawMark(d.x, d.y, d.activation, mk)
+          drawMark(d.x, d.y, d.activation, mk, colors.markOpacity)
         }
       }
     }
