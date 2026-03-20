@@ -1,0 +1,101 @@
+---
+import type { ImageMetadata } from 'astro'
+import { Image } from 'astro:assets'
+import Header from 'components/Header.astro'
+import Base from './Base.astro'
+
+const { frontmatter } = Astro.props
+const image = frontmatter?.image as { src: string; alt: string; caption?: string } | undefined
+
+const assetImages = import.meta.glob<{ default: ImageMetadata }>('../assets/*.{jpg,jpeg,png}')
+const imageFromAssets =
+  image?.src &&
+  !image.src.startsWith('/') &&
+  assetImages[`../assets/${image.src}`]
+const imageModule =
+  typeof imageFromAssets === 'function' ? await imageFromAssets() : null
+---
+
+<Base frontmatter={frontmatter}>
+  <Header />
+  <div class="about-layout">
+    <aside class="about-layout__media" aria-hidden={!image}>
+      {image?.src && (
+        <figure class="about-layout__figure">
+          {imageModule?.default ? (
+            <Image
+              src={imageModule.default}
+              width={800}
+              height={1000}
+              alt={image.alt}
+              class="about-layout__img"
+            />
+          ) : (
+            <img
+              src={image.src}
+              alt={image.alt}
+              width="800"
+              height="1000"
+              loading="eager"
+              decoding="async"
+              class="about-layout__img"
+            />
+          )}
+          {image.caption && (
+            <figcaption class="about-layout__caption">{image.caption}</figcaption>
+          )}
+        </figure>
+      )}
+    </aside>
+    <main class="about-layout__content prose dark:prose-invert">
+      <slot />
+    </main>
+  </div>
+</Base>
+
+<style>
+  .about-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+    padding-top: 1rem;
+  }
+
+  .about-layout__media {
+    position: sticky;
+    top: 2rem;
+  }
+
+  .about-layout__figure {
+    margin: 0;
+  }
+
+  .about-layout__img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 0.25rem;
+  }
+
+  .about-layout__caption {
+    margin-top: 0.5rem;
+    font-size: var(--step--2, 0.8rem);
+    color: var(--meta-color, var(--text-color));
+  }
+
+  .about-layout__content {
+    margin: 0;
+    max-width: none;
+  }
+
+  @media (max-width: 768px) {
+    .about-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .about-layout__media {
+      position: static;
+    }
+  }
+</style>
