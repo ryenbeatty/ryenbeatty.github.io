@@ -14,9 +14,9 @@ export default defineConfig({
   prefetch: true,
   integrations: [svelte(), mdx(), sitemap(), robotsTxt(), tailwind()],
   vite: {
-    plugins: [vidstack({
+    plugins: ([] as any[]).concat(vidstack({
       include: /player\//
-    })],
+    })),
     resolve: {
       preserveSymlinks: true
     }

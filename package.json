@@ -2,7 +2,7 @@
   "name": "v3",
   "type": "module",
   "version": "0.0.1",
-  "packageManager": "pnpm@8.7.0",
+  "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=18",
     "pnpm": ">=8"

@@ -1,8 +1,8 @@
-import { getData } from 'services/lastfm';
+import { getData, LastFmMethods } from 'services/lastfm';
 
 export const load = async () => {
-    const METHOD = 'user.getrecenttracks';
-    const tracks = await getData(METHOD);
+    const method = LastFmMethods.RecentTracks;
+    const tracks = await getData(method);
 
     return {
         tracks
