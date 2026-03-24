@@ -76,8 +76,6 @@
   /* Cap 125% (20px) on desktop so body (step--1) stays readable, not ~24px */
   font-size: clamp(100%, 2.5vw, 125%);
   line-height: var(--baseline);
-  font-feature-settings: 'ss02' 1;
-  font-variant-alternates: stylistic(ss02);
 }
 
 ::selection {
