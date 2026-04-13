@@ -9,13 +9,17 @@ jobs:
   deploy:
     runs-on: codeberg-tiny
     steps:
-      - uses: https://codeberg.org/actions/checkout@v4
-      - uses: https://codeberg.org/actions/setup-node@v4
-        with:
-          node-version: 20
+      - uses: actions/checkout@v4
+      - name: Install Bun
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+      - run: bun --version
+      - run: bun install
       - run: bun run build
-      - uses: https://codeberg.org/git-pages/action@v2
+      - uses: git-pages/action@v2
         with:
-          site: "https://frome.codeberg.page"
+          site: "https://frome.codeberg.page/"
           token: ${{ forge.token }}
           source: dist/
+
