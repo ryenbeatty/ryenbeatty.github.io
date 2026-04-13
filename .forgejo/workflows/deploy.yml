@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: codeberg-tiny
+    runs-on: research_pod 
     steps:
       - uses: actions/checkout@v4
       - name: Install Bun
