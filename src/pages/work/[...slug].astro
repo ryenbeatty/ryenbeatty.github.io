@@ -34,11 +34,9 @@ const nextProject =
     : null
 const prevProject = currentIndex > 0 ? sorted[currentIndex - 1] : null
 const sections = entry.data.sections ?? []
-const desc = entry.data.description
-const firstBodyHtml =
-  typeof desc === 'string' ? await Promise.resolve(marked(desc)) : String(desc)
-const restRows = await Promise.all(
-  sections.slice(1).map(async (sec) => ({
+const sectionRows = await Promise.all(
+  sections.map(async (sec) => ({
+    title: sec.title,
     bodyHtml:
       typeof sec.text === 'string'
         ? ((await Promise.resolve(marked(sec.text))) as string)
@@ -56,16 +54,9 @@ interface SectionRowProps {
     poster?: string
   }[]
 }
-const sectionRows: SectionRowProps[] = [
-  {
-    title: entry.data.title,
-    bodyHtml: firstBodyHtml as string,
-    media: sections[0]?.media ?? [],
-  },
-  ...restRows,
-]
+const typedSectionRows: SectionRowProps[] = sectionRows
 
-const pageTitle = `${entry.data.title} 〰︎ Ryen Beatty 〰︎ Design engineer`
+const pageTitle = `${entry.data.title} - Ryen Beatty - Design engineer`
 const frontmatter = { ...entry.data, title: pageTitle }
 ---
 
@@ -80,7 +71,7 @@ const frontmatter = { ...entry.data, title: pageTitle }
         />
 
         <div class="project-sections">
-          {sectionRows.map((row) => (
+          {typedSectionRows.map((row) => (
             <ProjectSectionRow
               title={row.title}
               bodyHtml={row.bodyHtml}
@@ -88,6 +79,7 @@ const frontmatter = { ...entry.data, title: pageTitle }
             />
           ))}
         </div>
+
         {nextProject ? (
           <NextProjectNav
             href={`/work/${nextProject.slug}`}
@@ -114,7 +106,7 @@ const frontmatter = { ...entry.data, title: pageTitle }
       />
 
       <div class="project-sections">
-        {sectionRows.map((row) => (
+        {typedSectionRows.map((row) => (
           <ProjectSectionRow
             title={row.title}
             bodyHtml={row.bodyHtml}

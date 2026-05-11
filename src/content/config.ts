@@ -21,6 +21,7 @@ const projectSectionMedia = z.object({
   poster: z.string().optional(), // optional poster image URL (e.g. for vidstack)
 })
 const projectSection = z.object({
+  title: z.string().optional(), // optional heading rendered above a section's body
   text: z.string(), // markdown, rendered on homepage
   media: z.array(projectSectionMedia),
 })
@@ -36,7 +37,7 @@ const project = defineCollection({
     'header-background': z.string().optional(),
     'hero-image': z.string().optional(),
     thumbnail: z.string().optional(), // image path for next-project nav tab
-    sections: z.array(projectSection).optional(), // [{ text, media }, ...]; first row uses title+description as text
+    sections: z.array(projectSection).optional(), // [{ title?, text, media }, ...]
   }),
 })
 
