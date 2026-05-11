@@ -6,6 +6,9 @@ interface MediaItem {
   type: 'image' | 'video' | 'vidstack'
   alt?: string
   poster?: string
+  /** CSS pixel width; use maxWidthPx if width is missing after build */
+  width?: number
+  maxWidthPx?: number
 }
 
 interface Props {
@@ -19,7 +22,17 @@ interface Props {
 }
 
 const { bodyHtml, media, title, titleHref } = Astro.props
+
+function mediaSizingStyle(width: number | undefined): string | undefined {
+  if (width == null) return undefined
+  return `width:${width}px;max-width:100%;height:auto;`
+}
+
+function resolveMediaWidth(item: MediaItem): number | undefined {
+  return item.maxWidthPx ?? item.width
+}
 ---
+
 
 <div class="project-section-row">
   <div class="project-section-row__text">
@@ -40,6 +53,7 @@ const { bodyHtml, media, title, titleHref } = Astro.props
   <div class="project-section-row__media">
     {
       media.map((item) => {
+        const w = resolveMediaWidth(item)
         if (item.type === 'video') {
           return (
             <video
@@ -48,14 +62,31 @@ const { bodyHtml, media, title, titleHref } = Astro.props
               loop
               muted
               playsinline
-              class="project-section-row__asset project-section-row__video--ambient"
+              class:list={[
+                'project-section-row__asset',
+                'project-section-row__video--ambient',
+                { 'project-section-row__asset--sized': w != null },
+              ]}
               aria-label={item.alt}
+              width={w}
+              style={mediaSizingStyle(w)}
             />
           )
         }
         if (item.type === 'vidstack') {
           return (
-            <div class="project-section-row__embed-wrap project-section-row__vidstack-wrap">
+            <div
+              class:list={[
+                'project-section-row__embed-wrap',
+                'project-section-row__vidstack-wrap',
+                { 'project-section-row__embed-wrap--sized': w != null },
+              ]}
+              style={
+                w != null
+                  ? `max-width:${w}px;width:100%;`
+                  : undefined
+              }
+            >
               <Media
                 client:only="svelte"
                 viewType="video"
@@ -72,7 +103,12 @@ const { bodyHtml, media, title, titleHref } = Astro.props
             src={item.src}
             alt={item.alt ?? ''}
             loading="lazy"
-            class="project-section-row__asset"
+            class:list={[
+              'project-section-row__asset',
+              { 'project-section-row__asset--sized': w != null },
+            ]}
+            width={w}
+            style={mediaSizingStyle(w)}
           />
         )
       })
@@ -122,14 +158,22 @@ const { bodyHtml, media, title, titleHref } = Astro.props
     grid-column: span 8;
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     gap: 1.5rem;
   }
 
   .project-section-row__asset {
     width: 100%;
+    max-width: 100%;
     height: auto;
     display: block;
     border-radius: 0.25rem;
+  }
+
+  /* Explicit width in frontmatter: opt out of flex cross-axis stretch */
+  .project-section-row__asset--sized {
+    align-self: flex-start;
+    flex-shrink: 0;
   }
 
   .project-section-row__asset video {
@@ -147,6 +191,10 @@ const { bodyHtml, media, title, titleHref } = Astro.props
     aspect-ratio: 16 / 9;
     border-radius: 0.25rem;
     overflow: hidden;
+  }
+
+  .project-section-row__embed-wrap--sized {
+    align-self: flex-start;
   }
 
   .project-section-row__vidstack-wrap {

@@ -52,6 +52,8 @@ interface SectionRowProps {
     type: 'image' | 'video' | 'vidstack'
     alt?: string
     poster?: string
+    width?: number
+    maxWidthPx?: number
   }[]
 }
 const typedSectionRows: SectionRowProps[] = sectionRows

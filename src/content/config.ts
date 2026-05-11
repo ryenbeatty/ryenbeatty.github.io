@@ -19,6 +19,10 @@ const projectSectionMedia = z.object({
   type: z.enum(['image', 'video', 'vidstack']),
   alt: z.string().optional(),
   poster: z.string().optional(), // optional poster image URL (e.g. for vidstack)
+  /** Pixel width (images/videos); prefer this if `width` does not survive your content pipeline */
+  maxWidthPx: z.coerce.number().positive().optional(),
+  /** Alias of maxWidthPx; may be stripped by stale Astro content cache if schema changed — restart dev / rm .astro */
+  width: z.coerce.number().positive().optional(),
 })
 const projectSection = z.object({
   title: z.string().optional(), // optional heading rendered above a section's body
