@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content'
 import { getCollection } from 'astro:content'
 import { marked } from 'marked'
 import ProjectSectionRow from './ProjectSectionRow.astro'
+import { sitePath } from '../utils/site'
 
 const raw = await getCollection('project')
 const projects = raw.sort((a: CollectionEntry<'project'>, b: CollectionEntry<'project'>) => {
@@ -35,7 +36,7 @@ const indexRows = await Promise.all(
       {i > 0 && <hr class="project-index__divider" />}
       <ProjectSectionRow
         title={row.title}
-        titleHref={`/work/${row.slug}`}
+        titleHref={sitePath(`work/${row.slug}`)}
         bodyHtml={row.bodyHtml}
         media={row.media}
       />

@@ -35,6 +35,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Verify project content (no broken Obsidian/iCloud symlinks on CI)
+        run: |
+          if [ ! -e src/content/project ]; then
+            echo "::error::Missing src/content/project — add committed project .mdx files to the repo."
+            exit 1
+          fi
+          count=$(find -L src/content/project -maxdepth 1 \( -name '*.mdx' -o -name '*.md' \) 2>/dev/null | wc -l | tr -d ' ')
+          if [ "$count" = "0" ]; then
+            echo "::error::No *.mdx/*.md under src/content/project. GitHub Actions cannot read a local-only symlink to Obsidian/iCloud."
+            echo "Fix: remove the symlink, copy your project files into src/content/project/, commit, and push."
+            exit 1
+          fi
+          echo "Project content files: $count"
       - name: Detect package manager
         id: detect-package-manager
         run: |

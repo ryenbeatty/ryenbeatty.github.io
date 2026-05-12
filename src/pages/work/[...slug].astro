@@ -8,6 +8,7 @@ import ProtectedLayout from 'layouts/Protected.astro'
 import type { CollectionEntry } from 'astro:content'
 import { getCollection } from 'astro:content'
 import { marked } from 'marked'
+import { sitePath } from '../../utils/site'
 
 export async function getStaticPaths() {
   const content = await getCollection('project')
@@ -84,14 +85,14 @@ const frontmatter = { ...entry.data, title: pageTitle }
 
         {nextProject ? (
           <NextProjectNav
-            href={`/work/${nextProject.slug}`}
+            href={sitePath(`work/${nextProject.slug}`)}
             title={nextProject.data.title}
             thumbnail={nextProject.data.thumbnail}
             side="right"
           />
         ) : prevProject ? (
           <NextProjectNav
-            href={`/work/${prevProject.slug}`}
+            href={sitePath(`work/${prevProject.slug}`)}
             title={prevProject.data.title}
             thumbnail={prevProject.data.thumbnail}
             side="left"
@@ -118,14 +119,14 @@ const frontmatter = { ...entry.data, title: pageTitle }
       </div>
       {nextProject ? (
         <NextProjectNav
-          href={`/work/${nextProject.slug}`}
+          href={sitePath(`work/${nextProject.slug}`)}
           title={nextProject.data.title}
           thumbnail={nextProject.data.thumbnail}
           side="right"
         />
       ) : prevProject ? (
         <NextProjectNav
-          href={`/work/${prevProject.slug}`}
+          href={sitePath(`work/${prevProject.slug}`)}
           title={prevProject.data.title}
           thumbnail={prevProject.data.thumbnail}
           side="left"
