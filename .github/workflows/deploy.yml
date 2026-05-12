@@ -60,11 +60,10 @@ jobs:
             echo "Unable to determine package manager (need yarn.lock, pnpm-lock.yaml, or package-lock.json)"
             exit 1
           fi
+      # Omit `version` — reads `packageManager` from package.json (e.g. pnpm@9.0.0)
       - name: Install pnpm
         if: steps.detect-package-manager.outputs.manager == 'pnpm'
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
