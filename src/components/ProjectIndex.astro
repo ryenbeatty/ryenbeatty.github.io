@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content'
 import { getCollection } from 'astro:content'
-import { marked } from 'marked'
+import { renderMarkdown } from '../utils/markdown'
 import ProjectSectionRow from './ProjectSectionRow.astro'
 import { sitePath } from '../utils/site'
 
@@ -13,18 +13,23 @@ const projects = raw.sort((a: CollectionEntry<'project'>, b: CollectionEntry<'pr
   return b.data.date.getTime() - a.data.date.getTime()
 })
 
-// One row per project: section one only (title + description + first section media)
+// One row per project: title + description; image from frontmatter thumbnail (else first section media)
 const indexRows = await Promise.all(
   projects.map(async (p) => {
     const sections = p.data.sections ?? []
     const raw = p.data.description
     const bodyHtml =
-      typeof raw === 'string' ? await Promise.resolve(marked(raw)) : String(raw)
+      typeof raw === 'string' ? await renderMarkdown(raw) : String(raw)
+    const thumb = p.data.thumbnail?.trim()
+    const media =
+      thumb
+        ? [{ src: thumb, type: 'image' as const, alt: p.data.title }]
+        : sections[0]?.media ?? []
     return {
       slug: p.slug,
       title: p.data.title,
       bodyHtml: bodyHtml as string,
-      media: sections[0]?.media ?? [],
+      media,
     }
   })
 )

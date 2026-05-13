@@ -7,7 +7,7 @@ import ProtectedLayout from 'layouts/Protected.astro'
 
 import type { CollectionEntry } from 'astro:content'
 import { getCollection } from 'astro:content'
-import { marked } from 'marked'
+import { renderMarkdown } from '../../utils/markdown'
 import { sitePath } from '../../utils/site'
 
 export async function getStaticPaths() {
@@ -40,7 +40,7 @@ const sectionRows = await Promise.all(
     title: sec.title,
     bodyHtml:
       typeof sec.text === 'string'
-        ? ((await Promise.resolve(marked(sec.text))) as string)
+        ? ((await renderMarkdown(sec.text)) as string)
         : String(sec.text),
     media: sec.media,
   })),

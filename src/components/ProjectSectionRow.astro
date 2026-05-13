@@ -98,19 +98,52 @@ function resolveMediaWidth(item: MediaItem): number | undefined {
             </div>
           )
         }
-        return (
+        const imgClassList = [
+          'project-section-row__asset',
+          { 'project-section-row__asset--sized': w != null },
+        ]
+        const imgNode = (
           <img
             src={item.src}
             alt={item.alt ?? ''}
             loading="lazy"
-            class:list={[
-              'project-section-row__asset',
-              { 'project-section-row__asset--sized': w != null },
-            ]}
+            class:list={imgClassList}
             width={w}
             style={mediaSizingStyle(w)}
           />
         )
+        if (titleHref) {
+          return (
+            <a
+              href={titleHref}
+              class:list={[
+                'project-section-row__media-link',
+                { 'project-section-row__media-link--sized': w != null },
+              ]}
+              aria-label={`View project — ${title ?? 'project'}`}
+              data-astro-prefetch="hover"
+            >
+              <span class="project-section-row__media-frame">
+                {imgNode}
+                <span class="project-section-row__media-overlay" aria-hidden="true">
+                  <svg
+                    class="project-section-row__media-arrow"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.75"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <path d="M5 12h14" />
+                    <path d="m13 6 6 6-6 6" />
+                  </svg>
+                </span>
+              </span>
+            </a>
+          )
+        }
+        return imgNode
       })
     }
   </div>
@@ -150,8 +183,16 @@ function resolveMediaWidth(item: MediaItem): number | undefined {
     margin: 0;
   }
 
+  .project-section-row__body :global(p) {
+    margin: 0 0 0.65em;
+  }
+
   .project-section-row__body :global(p:first-child) {
     margin-top: 0;
+  }
+
+  .project-section-row__body :global(p:last-child) {
+    margin-bottom: 0;
   }
 
   .project-section-row__media {
@@ -174,6 +215,78 @@ function resolveMediaWidth(item: MediaItem): number | undefined {
   .project-section-row__asset--sized {
     align-self: flex-start;
     flex-shrink: 0;
+  }
+
+  .project-section-row__media-link {
+    position: relative;
+    display: block;
+    max-width: 100%;
+    border-radius: 0.25rem;
+    color: #fff;
+    outline-offset: 4px;
+  }
+
+  .project-section-row__media-link--sized {
+    align-self: flex-start;
+  }
+
+  .project-section-row__media-frame {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    border-radius: inherit;
+  }
+
+  .project-section-row__media-link .project-section-row__asset {
+    transition:
+      filter 0.28s ease,
+      transform 0.35s ease;
+  }
+
+  .project-section-row__media-link:hover .project-section-row__asset,
+  .project-section-row__media-link:focus-visible .project-section-row__asset {
+    filter: brightness(0.9);
+  }
+
+  .project-section-row__media-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .project-section-row__media-arrow {
+    width: clamp(3rem, 12vw, 5.5rem);
+    height: clamp(3rem, 12vw, 5.5rem);
+    opacity: 0;
+    transform: translateX(-0.35rem) scale(0.92);
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.35));
+    transition:
+      opacity 0.26s ease,
+      transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .project-section-row__media-link:hover .project-section-row__media-arrow,
+  .project-section-row__media-link:focus-visible .project-section-row__media-arrow {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+
+  .project-section-row__media-link:focus-visible {
+    outline: 2px solid var(--color-border, #888);
+  }
+
+  .project-section-row__media-link:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-section-row__media-link .project-section-row__asset,
+    .project-section-row__media-arrow {
+      transition-duration: 0.01ms;
+    }
   }
 
   .project-section-row__asset video {
