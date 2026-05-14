@@ -89,6 +89,11 @@ const imageModule =
     max-width: none;
   }
 
+  /* MDX/markdown: clearer separation between paragraphs (extra blank lines in source still become one <p> boundary) */
+  .about-layout__content :global(p + p) {
+    margin-top: 1.35rem;
+  }
+
   @media (max-width: 768px) {
     .about-layout {
       grid-template-columns: 1fr;
