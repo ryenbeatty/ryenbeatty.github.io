@@ -40,7 +40,7 @@ const { variant } = Astro.props
       </a>
     </li> -->
 
-    <!-- <li>
+    <li>
       <a
         class={clsx('link', currentPath === 'about' ? 'active' : '')}
         href="/about"
@@ -48,7 +48,7 @@ const { variant } = Astro.props
       >
         About
       </a>
-    </li>-->
+    </li>
     <div class="theme-toggle-wrap">
       <ThemeToggle client:only="svelte" />
     </div>
