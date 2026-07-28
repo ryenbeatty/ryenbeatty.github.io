@@ -1,11 +1,11 @@
 ---
-import Header from 'components/Header.astro'
 import Base from './Base.astro'
 
 const { frontmatter } = Astro.props
 ---
 
 <Base frontmatter={frontmatter}>
-  <Header />
-  <slot />
+  <div class="">
+    <slot />
+  </div>
 </Base>

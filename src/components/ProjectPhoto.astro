@@ -1,0 +1,23 @@
+---
+interface Props {
+  caption?: string
+  maxWidthPx?: number
+}
+
+const PROJECT_MEDIA_MAX = 960
+
+const { caption, maxWidthPx } = Astro.props
+const cappedWidth =
+  maxWidthPx != null ? Math.min(maxWidthPx, PROJECT_MEDIA_MAX) : undefined
+const figureStyle =
+  cappedWidth != null
+    ? `max-width: min(${cappedWidth}px, 100%);`
+    : undefined
+---
+
+<figure class="photo" style={figureStyle}>
+  <div class="photoFrame hairline">
+    <slot />
+  </div>
+  {caption ? <figcaption class="mediaCaption">{caption}</figcaption> : null}
+</figure>

@@ -4,12 +4,6 @@ import { ViewTransitions } from 'astro:transitions'
 const { title = 'Ryen Beatty - Design engineer', description } = Astro.props
 ---
 
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-  rel="stylesheet"
-  href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@100..700&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap"
-/>
 <meta name="generator" content={Astro.generator} />
 
 <SEO
@@ -55,4 +49,14 @@ const { title = 'Ryen Beatty - Design engineer', description } = Astro.props
 <meta name="viewport" content="width=device-width" />
 <meta name="generator" content={Astro.generator} />
 
-<ViewTransitions transition:animate="slide" />
+<script is:inline>
+  ;(function () {
+    const theme = localStorage.getItem('theme')
+    document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : 'light')
+    if (localStorage.getItem('command-center') === 'true') {
+      document.documentElement.setAttribute('data-command-center', 'true')
+    }
+  })()
+</script>
+
+<ViewTransitions />

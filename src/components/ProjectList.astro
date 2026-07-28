@@ -1,9 +1,10 @@
 ---
 import { getCollection } from 'astro:content'
 import { sitePath } from '../utils/site'
+import { getProjectEntries } from '../utils/project-data'
 
-const projects = await getCollection('project').then((p) =>
-  p.sort((a, b) => b.data.date.getTime() - a.data.date.getTime()),
+const projects = (await getProjectEntries()).sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 )
 ---
 

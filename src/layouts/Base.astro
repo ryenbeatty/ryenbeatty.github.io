@@ -2,37 +2,18 @@
 import 'styles/global.css'
 
 import CommonHead from 'components/CommonHead.astro'
-import Footer from 'components/Footer.astro'
-import GridTrailBackground from 'components/GridTrailBackground.astro'
+import InstrumentPanel from 'components/InstrumentPanel.astro'
+import { fade } from 'astro:transitions'
 
 const { frontmatter } = Astro.props
+
+/** Default Astro fade is ~0.18s; ~30% faster */
+const pageContentFade = fade({ duration: '0.13s' })
 ---
 
 <!--
   ᚛ᚈᚆᚔᚄ ᚔᚄ ᚏᚍᚓᚅᚄ ᚃᚓᚁᚄᚔᚈᚓ ᚆᚓ ᚂᚔᚉᚓᚄ ᚄᚓᚐ ᚈᚒᚏᚈᚂᚓᚄ ᚆᚓᚏᚓ ᚔᚄ ᚐ ᚄᚓᚐ ᚈᚒᚏᚈᚂᚓ ᚔᚃ ᚍᚑᚒᚃᚓ ᚇᚓᚉᚑᚇᚓᚇ ᚈᚆᚔᚄ ᚋᚓᚄᚄᚐᚌᚓ ᚚᚂᚓᚐᚄᚓ ᚓᚋᚐᚔᚂ ᚋᚓ ᚐᚈ ᚋᚐᚔᚂᚏᚍᚓᚅᚁᚓᚐᚈᚈᚍᚔᚅᚃᚑ ᚈᚑ ᚌᚓᚈ ᚍᚑᚒᚏ ᚏᚓᚃᚐᚏᚇ᚜
-
-⢸⣷⡦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠙⢿⡪⡑⢤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡤⠤⠤⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠈⠻⣔⣌⠑⠢⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠻⠇⠀⠀⣈⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠙⢻⡦⡀⠉⢢⡀⠀⠀⠀⠀⠀⠀⣼⠒⠦⢄⡀⢻⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⢹⣇⠀⠀⢳⡀⠀⠀⠀⠀⡴⠛⠻⠥⣲⣭⠏⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⢇⣠⣴⣖⣾⣦⢤⣀⠀⢨⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⣆⣤⣪⠽⠋⠈⣆⠀⠀⠉⠙⣿⡯⡀⢀⡠⠖⠒⠦⢄⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⡯⠧⠄⢰⡒⠈⠉⠉⠒⢖⠈⠁⢹⠻⡋⠀⠀⠀⢀⠀⠀⡉⠑⠂⢠⠤⠤⠤⢤⣀
-⠀⠀⠀⠀⠀⠀⠀⠀⣜⡹⠀⠀⠀⠀⢣⠀⠀⠀⠀⢀⡵⠤⣈⢳⢧⡴⣲⣼⠭⠵⠮⠙⠛⠛⠛⠛⠚⠙⠛⠛
-⠀⠀⠀⠀⠀⠀⠀⣸⡽⠀⠀⠀⠀⢀⠤⠳⠤⣤⠔⠉⠀⠀⠀⠙⣺⡉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⣰⢹⠓⠒⠂⢠⡞⠁⠀⠀⠀⠈⢦⡀⠀⠀⠀⠀⣁⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⣿⡯⠀⠀⠀⠀⠱⡀⠀⠀⠀⠀⡠⠷⢄⣀⠀⢰⢫⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢿⡇⠀⠀⠀⣠⠔⠚⠒⠢⡖⠋⠀⠀⠀⠈⢉⠶⡟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢸⡗⠒⠒⡍⠀⠀⠀⠀⠀⢳⣀⡀⠀⠀⢀⣺⡜⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠘⡟⡄⠀⢱⡀⠀⠀⠀⣠⠋⠀⠈⠙⢢⣏⡜⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢠⢿⢧⣠⠞⠋⠓⠒⣞⠁⠀⠀⡠⣴⡵⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⣠⠏⢘⣿⢢⠀⠀⠀⠀⣘⣦⣔⡾⠚⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⢠⠟⠁⣐⣿⠉⢿⣲⣤⡿⠿⢷⣾⠁⢳⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⢿⠀⢰⣿⠃⠀⠀⠉⠀⠀⠀⡞⡿⠀⠀⣇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠘⣴⡿⠋⠀⠀⠀⠀⠀⠀⣼⣿⠁⠀⢀⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⢽⣀⡤⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
- --><!doctype html>
+--><!doctype html>
 <html lang="en">
   <head>
     <CommonHead
@@ -41,12 +22,45 @@ const { frontmatter } = Astro.props
     />
   </head>
 
-  <body class="flex flex-col min-h-screen max-w-screen-xl mx-auto px-4 sm:px-6">
-    <GridTrailBackground />
-    <div class="grow relative z-[1]">
-      <slot />
-    </div>
+  <body class="min-h-screen">
+    <div class="app-layout">
+      <InstrumentPanel />
+      <div class="page-shell flex flex-col min-h-screen w-full">
+        <div
+          class="outpost-transition-target page-shell__fade flex flex-col flex-1 min-h-0"
+          transition:animate={pageContentFade}
+        >
+          <!-- <GridTrailBackground /> -->
+          <div class="grow relative z-[1]">
+            <slot />
+          </div>
+        </div>
 
-    <Footer />
+        <!-- <Footer /> -->
+      </div>
+    </div>
+    <style>
+      .app-layout {
+        display: grid;
+        grid-template-columns: 350px minmax(0, 1fr);
+        align-items: start;
+        gap: 16px;
+        --layout-padding: 16px;
+        --instrument-panel-inset: calc(var(--layout-padding) * 2);
+        padding: var(--layout-padding);
+        width: 100%;
+        min-height: 100vh;
+        min-height: 100dvh;
+        box-sizing: border-box;
+      }
+
+      .page-shell {
+        min-width: 0;
+        width: 100%;
+      }
+    </style>
+    <script>
+      import '../scripts/project-hero-morph-frame.ts'
+    </script>
   </body>
 </html>

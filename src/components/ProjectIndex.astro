@@ -1,64 +1,478 @@
 ---
 import type { CollectionEntry } from 'astro:content'
 import { getCollection } from 'astro:content'
-import { renderMarkdown } from '../utils/markdown'
-import ProjectSectionRow from './ProjectSectionRow.astro'
-import { sitePath } from '../utils/site'
+import { projectIndexConfig } from '../data/project-index'
+import type { ProjectIndexTile } from '../schemas/project-index'
+import type { OutpostPanelConfig } from '../schemas/project-outpost'
+import { resolveModeVisibility } from '../schemas/project-outpost'
+import {
+  getProjectEntries,
+  isPublishedProject,
+  resolveProjectForIndex,
+  type ResolvedProjectIndexItem,
+} from '../utils/project-data'
+import { computeReflowSpans } from '../utils/project-index-layout'
+import { TURTLE_ART } from '../data/turtle-art'
+import Button from './Button.astro'
+import OutpostTile from './OutpostTile.astro'
+import ProjectTile from './ProjectTile.astro'
 
-const raw = await getCollection('project')
-const projects = raw.sort((a: CollectionEntry<'project'>, b: CollectionEntry<'project'>) => {
-  const orderA = a.data.order ?? 999
-  const orderB = b.data.order ?? 999
-  if (orderA !== orderB) return orderA - orderB
-  return b.data.date.getTime() - a.data.date.getTime()
-})
+const raw = await getProjectEntries()
+const allProjectsForManifest = import.meta.env.DEV
+  ? await getCollection('project')
+  : raw
+const projectsBySlug = new Map<string, CollectionEntry<'project'>>(
+  allProjectsForManifest.map((project: CollectionEntry<'project'>) => [
+    project.slug,
+    project,
+  ]),
+)
 
-// One row per project: title + description; image from frontmatter thumbnail (else first section media)
-const indexRows = await Promise.all(
-  projects.map(async (p) => {
-    const sections = p.data.sections ?? []
-    const raw = p.data.description
-    const bodyHtml =
-      typeof raw === 'string' ? await renderMarkdown(raw) : String(raw)
-    const thumb = p.data.thumbnail?.trim()
-    const media =
-      thumb
-        ? [{ src: thumb, type: 'image' as const, alt: p.data.title }]
-        : sections[0]?.media ?? []
+const sortedProjects = [...raw].sort(
+  (a: CollectionEntry<'project'>, b: CollectionEntry<'project'>) => {
+    const orderA = a.data.order ?? 999
+    const orderB = b.data.order ?? 999
+    if (orderA !== orderB) return orderA - orderB
+    return b.data.date.getTime() - a.data.date.getTime()
+  },
+)
+
+const resolvedBySlug = new Map<string, ResolvedProjectIndexItem>(
+  await Promise.all(
+    sortedProjects.map(
+      async (project) =>
+        [project.slug, await resolveProjectForIndex(project)] as const,
+    ),
+  ),
+)
+
+type ResolvedTile = {
+  tile: ProjectIndexTile
+  resolved: ResolvedProjectIndexItem
+  project: CollectionEntry<'project'>
+  outpostConfig?: OutpostPanelConfig
+  visibility: { default: boolean; outpost: boolean }
+}
+
+function resolveOutpostConfig(
+  tile: ProjectIndexTile,
+  project: CollectionEntry<'project'>,
+): OutpostPanelConfig | undefined {
+  return tile.outpost ?? project.data.outpostPanel
+}
+
+function resolveManifestRows() {
+  return projectIndexConfig.rows
+    .map((row) => ({
+      tiles: row.tiles.flatMap((tile) => {
+        const project = projectsBySlug.get(tile.project)
+        if (!project) {
+          if (import.meta.env.DEV) {
+            throw new Error(
+              `project-index: unknown project slug "${tile.project}"`,
+            )
+          }
+          return []
+        }
+        if (!isPublishedProject(project)) return []
+        const resolved = resolvedBySlug.get(tile.project)
+        if (!resolved) {
+          throw new Error(
+            `project-index: failed to resolve project "${tile.project}"`,
+          )
+        }
+        return [
+          {
+            tile,
+            resolved,
+            project,
+            outpostConfig: resolveOutpostConfig(tile, project),
+            visibility: resolveModeVisibility(
+              tile.visibleIn,
+              project.data.visibleIn,
+            ),
+          } satisfies ResolvedTile,
+        ]
+      }),
+    }))
+    .filter((row) => row.tiles.length > 0)
+}
+
+function buildFallbackRows() {
+  return sortedProjects.map((project) => {
+    const resolved = resolvedBySlug.get(project.slug)
+    if (!resolved) {
+      throw new Error(
+        `project-index: failed to resolve project "${project.slug}"`,
+      )
+    }
+    const tile: ProjectIndexTile = {
+      project: project.slug,
+      width: 'full',
+      height: 'regular',
+    }
     return {
-      slug: p.slug,
-      title: p.data.title,
-      bodyHtml: bodyHtml as string,
-      media,
+      tiles: [
+        {
+          tile,
+          resolved,
+          project,
+          outpostConfig: resolveOutpostConfig(tile, project),
+          visibility: resolveModeVisibility(undefined, project.data.visibleIn),
+        } satisfies ResolvedTile,
+      ],
     }
   })
-)
+}
+
+const sourceRows =
+  projectIndexConfig.rows.length > 0
+    ? resolveManifestRows()
+    : buildFallbackRows()
+
+const layoutRows = sourceRows.map((row) => {
+  const layoutTiles = row.tiles.map((entry) => ({
+    item: entry,
+    width: entry.tile.width,
+    visibility: entry.visibility,
+  }))
+
+  const defaultTiles = computeReflowSpans(layoutTiles, 'default')
+  const outpostTiles = computeReflowSpans(
+    layoutTiles.filter(
+      ({ item, visibility }) => visibility.outpost && item.outpostConfig,
+    ),
+    'outpost',
+  )
+
+  return { defaultTiles, outpostTiles }
+})
 ---
 
 <section class="project-index" aria-label="Projects">
-  {indexRows.map((row, i) => (
-    <>
-      {i > 0 && <hr class="project-index__divider" />}
-      <ProjectSectionRow
-        title={row.title}
-        titleHref={sitePath(`work/${row.slug}`)}
-        bodyHtml={row.bodyHtml}
-        media={row.media}
-      />
-    </>
-  ))}
+  {
+    layoutRows.map(({ defaultTiles, outpostTiles }) => (
+      <>
+        {defaultTiles.length > 0 ? (
+          <div class="project-index__row project-index__row--default">
+            {defaultTiles.map(({ item, span }) => (
+              <div
+                class="project-index__cell"
+                data-span={span}
+                data-height={item.tile.height}
+              >
+                <ProjectTile
+                  title={item.resolved.title}
+                  slug={item.resolved.slug}
+                  description={item.resolved.description}
+                  thumbnail={item.resolved.thumbnail}
+                  height={item.tile.height}
+                />
+              </div>
+            ))}
+          </div>
+        ) : null}
+        {outpostTiles.length > 0 ? (
+          <div class="project-index__row project-index__row--outpost">
+            {outpostTiles.map(({ item, span }) => (
+              <div
+                class="project-index__cell"
+                data-span={span}
+                data-height={item.tile.height}
+              >
+                <OutpostTile
+                  config={item.outpostConfig!}
+                  title={item.resolved.title}
+                  height={item.tile.height}
+                />
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </>
+    ))
+  }
+
+  <div class="project-index__cta">
+    <div class="project-index__cta-copy">
+      <p class="project-index__cta-label">
+        Want to chat?<br />
+        Say hi anytime
+      </p>
+    </div>
+    <div class="project-index__cta-side">
+      <pre class="project-index__cta-turtle" aria-hidden="true">{TURTLE_ART}</pre>
+      <Button
+        href="mailto:hello@ryenbeatty.com"
+        size="xxxxxl"
+        class="project-index__cta-button"
+      >
+        Let's connect
+      </Button>
+    </div>
+  </div>
 </section>
+
+<script>
+  import '../scripts/project-index-hero-nav.ts'
+</script>
 
 <style>
   .project-index {
     display: flex;
     flex-direction: column;
-    padding-bottom: 4rem;
+    gap: 16px;
+    /* padding: 0 16px; */
   }
 
-  .project-index__divider {
-    margin: 0;
+  .project-index__row {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .project-index__row--outpost {
+    display: none;
+  }
+
+  :global(html[data-command-center='true']) .project-index__row--default {
+    display: none;
+  }
+
+  :global(html[data-command-center='true']) .project-index__row--outpost {
+    display: grid;
+  }
+
+  .project-index__cell {
+    min-width: 0;
+    min-height: var(--tile-min-height, 20rem);
+  }
+
+  .project-index__cell[data-height='short'] {
+    --tile-min-height: 14rem;
+  }
+
+  .project-index__cell[data-height='regular'] {
+    --tile-min-height: 20rem;
+  }
+
+  .project-index__cell[data-height='tall'] {
+    --tile-min-height: 28rem;
+  }
+
+  .project-index__cell[data-span='1'] {
+    grid-column: span 1;
+  }
+  .project-index__cell[data-span='2'] {
+    grid-column: span 2;
+  }
+  .project-index__cell[data-span='3'] {
+    grid-column: span 3;
+  }
+  .project-index__cell[data-span='4'] {
+    grid-column: span 4;
+  }
+  .project-index__cell[data-span='5'] {
+    grid-column: span 5;
+  }
+  .project-index__cell[data-span='6'] {
+    grid-column: span 6;
+  }
+  .project-index__cell[data-span='7'] {
+    grid-column: span 7;
+  }
+  .project-index__cell[data-span='8'] {
+    grid-column: span 8;
+  }
+  .project-index__cell[data-span='9'] {
+    grid-column: span 9;
+  }
+  .project-index__cell[data-span='10'] {
+    grid-column: span 10;
+  }
+  .project-index__cell[data-span='11'] {
+    grid-column: span 11;
+  }
+  .project-index__cell[data-span='12'] {
+    grid-column: span 12;
+  }
+
+  .project-index__cell :global(.project-tile) {
+    --tile-body-space: 0;
+  }
+
+  .project-index__cell :global(.project-tile__body) {
+    padding: 0;
+  }
+
+  .project-index--hero-nav .project-index__cell[data-nav-hidden],
+  .project-index--hero-nav .project-index__cta[data-nav-hidden] {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity var(--project-index-nav-fade-duration, 0.15s)
+        cubic-bezier(0.33, 1, 0.68, 1),
+      visibility 0s linear var(--project-index-nav-fade-duration, 0.15s);
+  }
+
+  /* Drop tile chrome immediately so rings/borders do not ghost during hero morph */
+  .project-index--hero-nav
+    .project-index__cell[data-nav-hidden]
+    :global(.project-tile__link) {
     border: none;
-    border-top: 1px solid var(--color-border, #e5e5e5);
+    box-shadow: none;
+    background: transparent;
+    transition: none;
+  }
+
+  .project-index--hero-nav :global(.project-tile--nav-active .project-tile__link) {
+    border: none;
+    box-shadow: none;
+    background: transparent;
+    border-radius: var(--tile-radius-hover);
+    overflow: hidden;
+    transition: none;
+  }
+
+  .project-index--hero-nav :global(.project-tile--nav-active .project-tile__media) {
+    overflow: hidden;
+    border-radius: inherit;
+  }
+
+  .project-index--hero-nav :global(.project-tile__overlay),
+  .project-index--hero-nav :global(.project-tile__actions) {
+    opacity: 0;
+    visibility: hidden;
+    transition: none;
+  }
+
+  .project-index--hero-nav :global(.project-tile--nav-active) {
+    position: relative;
+    z-index: 2;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-index--hero-nav .project-index__cell[data-nav-hidden],
+    .project-index--hero-nav .project-index__cta[data-nav-hidden] {
+      transition: none;
+    }
+  }
+
+  .project-index__cta {
+    --cta-bg: #1a1625;
+    --cta-text: #f5f0e8;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: stretch;
+    width: 100%;
+    min-height: 28rem;
+    padding: 1.5rem 2rem;
+    box-sizing: border-box;
+    background-color: var(--cta-bg);
+    color: var(--cta-text);
+    border-radius: var(--panel-radius);
+    overflow: visible;
+  }
+
+  .project-index__cta-copy {
+    display: flex;
+    align-items: flex-start;
+    min-width: 0;
+  }
+
+  .project-index__cta-side {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1.5rem;
+    min-width: 0;
+    min-height: 100%;
+  }
+
+  :global([data-theme='dark']) .project-index__cta {
+    --cta-bg: #f8f6f1;
+    --cta-text: hsl(36, calc(0.12 * 35%), 28%);
+  }
+
+  :global([data-command-center='true']) .project-index__cta {
+    --cta-bg: #07080a;
+    --cta-text: #39ff14;
+    border: 1px solid rgba(57, 255, 20, 0.12);
+  }
+
+  .project-index__cta-label {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: var(--step-0);
+    font-weight: 400;
+    line-height: 1.35;
+  }
+
+  .project-index__cta-turtle {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-family: var(--font-mono), ui-monospace, Menlo, Monaco, Consolas,
+      monospace;
+    font-size: 16px;
+    line-height: 1;
+    letter-spacing: 0;
+    white-space: pre;
+    color: var(--cta-text);
+    opacity: 0.62;
+    transform: scale(1);
+    transform-origin: top right;
+    pointer-events: none;
+    overflow: visible;
+  }
+
+  .project-index__cta :global(.project-index__cta-button) {
+    width: fit-content;
+    max-width: 100%;
+    flex: 0 0 auto;
+    margin-top: auto;
+    background-color: var(--cta-text);
+    color: var(--cta-bg);
+    border-color: var(--cta-text);
+  }
+
+  .project-index__cta :global(.project-index__cta-button:hover) {
+    opacity: 0.9;
+  }
+
+  @media (max-width: 768px) {
+    .project-index__row {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .project-index__cell[data-span] {
+      grid-column: span 1;
+    }
+
+    .project-index__cta {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+
+    .project-index__cta-side {
+      align-items: flex-start;
+    }
+
+    .project-index__cta-turtle {
+      transform-origin: top left;
+    }
+
+    .project-index__cta :global(.project-index__cta-button) {
+      align-self: flex-end;
+    }
   }
 </style>

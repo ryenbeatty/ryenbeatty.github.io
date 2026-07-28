@@ -1,0 +1,102 @@
+---
+// import NextProjectNav from 'components/NextProjectNav.astro'
+import { Undo2 } from '@lucide/astro'
+import Button from 'components/Button.astro'
+import ProjectSectionRow from 'components/ProjectSectionRow.astro'
+import { sitePath } from '../utils/site'
+
+interface SectionRowProps {
+  title?: string
+  bodyHtml: string
+  media: {
+    src: string
+    type: 'image' | 'video' | 'vidstack'
+    alt?: string
+    caption?: string
+    poster?: string
+    width?: number
+    maxWidthPx?: number
+  }[]
+}
+
+interface Props {
+  slug: string
+  thumbnail?: string
+  description: string
+  heroImage?: string
+  sectionRows: SectionRowProps[]
+  nextProject?: { slug: string; title: string; thumbnail?: string } | null
+  prevProject?: { slug: string; title: string; thumbnail?: string } | null
+}
+
+const { slug, thumbnail, description, heroImage, sectionRows } = Astro.props
+
+const firstSectionMedia = sectionRows[0]?.media[0]
+const heroMorphEnabled =
+  Boolean(thumbnail?.trim()) && firstSectionMedia?.type === 'image'
+---
+
+<div class="project-page">
+  <div class="project-page__top">
+    <Button
+      variant="ghost"
+      size="sm"
+      href={sitePath('')}
+      class="project-page__back"
+      aria-label="Back to home"
+      data-astro-prefetch="hover"
+    >
+      <Undo2 size={18} stroke-width={1.75} aria-hidden="true" />
+      Home
+    </Button>
+  </div>
+
+  <!-- <h2 class="text-2xl leading-[1.2] m-0">{description}</h2> -->
+  <!-- <ProjectHero {description} {heroImage} /> -->
+
+  <div class="project-sections">
+    {
+      sectionRows.map((row, rowIndex) => (
+        <ProjectSectionRow
+          title={row.title}
+          bodyHtml={row.bodyHtml}
+          media={row.media}
+          heroTransitionSlug={
+            rowIndex === 0 && heroMorphEnabled ? slug : undefined
+          }
+        />
+      ))
+    }
+  </div>
+
+  <!-- {
+    nextProject ? (
+      <NextProjectNav
+        href={sitePath(`work/${nextProject.slug}`)}
+        title={nextProject.title}
+        thumbnail={nextProject.thumbnail}
+        side="right"
+      />
+    ) : prevProject ? (
+      <NextProjectNav
+        href={sitePath(`work/${prevProject.slug}`)}
+        title={prevProject.title}
+        thumbnail={prevProject.thumbnail}
+        side="left"
+      />
+    ) : null
+  } -->
+</div>
+
+<style>
+  .project-page__top {
+    position: sticky;
+    top: var(--layout-padding, 16px);
+    z-index: 5;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    padding: 0rem 0.5rem 0.5rem;
+  }
+</style>

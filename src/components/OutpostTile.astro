@@ -1,0 +1,76 @@
+---
+import { ProjectOutpostPanel } from './outpost/ProjectOutpostPanel.tsx'
+import type { OutpostPanelConfig } from '../schemas/project-outpost'
+import type { TileHeight } from '../schemas/project-index'
+
+interface Props {
+  config: OutpostPanelConfig
+  title: string
+  height: TileHeight
+}
+
+const { config, title, height } = Astro.props
+---
+
+<article class="outpost-tile" data-height={height}>
+  <ProjectOutpostPanel client:load config={config} title={title} />
+</article>
+
+<style>
+  .outpost-tile {
+    height: 100%;
+    min-height: var(--tile-min-height, 20rem);
+  }
+
+  .outpost-tile[data-height='short'] {
+    --tile-min-height: 14rem;
+  }
+
+  .outpost-tile[data-height='regular'] {
+    --tile-min-height: 20rem;
+  }
+
+  .outpost-tile[data-height='tall'] {
+    --tile-min-height: 28rem;
+  }
+
+  .outpost-tile :global(.outpost-tile__content) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: inherit;
+    border-radius: var(--panel-radius);
+    overflow: hidden;
+    border: 1px solid rgba(57, 255, 20, 0.12);
+    box-shadow: var(--panel-shadow);
+    background: #07080a;
+  }
+
+  .outpost-tile :global(.outpost-tile__content--video) {
+    width: 100%;
+    border: 0;
+    box-shadow: none;
+    background: #000;
+  }
+
+  .outpost-tile :global(.outpost-tile__content--video .outpost-video) {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .outpost-tile :global(.outpost__panel) {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .outpost-tile :global(.outpost__panel-body) {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+</style>

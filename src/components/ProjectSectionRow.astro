@@ -1,10 +1,18 @@
 ---
 import Media from './Media/index.svelte'
+import ProjectPhoto from './ProjectPhoto.astro'
+import {
+  resolveMediaGridColumns,
+  resolveMediaWidthPx,
+  resolveMediaType,
+} from '../utils/project-media'
+import { projectHeroTransitionName } from '../utils/view-transitions'
 
 interface MediaItem {
   src: string
   type: 'image' | 'video' | 'vidstack'
   alt?: string
+  caption?: string
   poster?: string
   /** CSS pixel width; use maxWidthPx if width is missing after build */
   width?: number
@@ -12,16 +20,24 @@ interface MediaItem {
 }
 
 interface Props {
-  /** Rendered HTML for the sticky left column */
+  /** Rendered HTML for the section body */
   bodyHtml: string
   media: MediaItem[]
   /** Heading above body (e.g. project title) */
   title?: string
   /** When set, title is rendered as a link (e.g. for homepage index) */
   titleHref?: string
+  /** First-row hero morph from project index tile (project slug) */
+  heroTransitionSlug?: string
 }
 
-const { bodyHtml, media, title, titleHref } = Astro.props
+const { bodyHtml, media, title, titleHref, heroTransitionSlug } = Astro.props
+
+const mediaGridColumns = resolveMediaGridColumns(media.length)
+const isMediaGrid = mediaGridColumns != null
+const sectionTitle = title?.trim()
+const hasBody = Boolean(bodyHtml?.trim())
+const showText = Boolean(sectionTitle || hasBody)
 
 function mediaSizingStyle(width: number | undefined): string | undefined {
   if (width == null) return undefined
@@ -29,121 +45,171 @@ function mediaSizingStyle(width: number | undefined): string | undefined {
 }
 
 function resolveMediaWidth(item: MediaItem): number | undefined {
-  return item.maxWidthPx ?? item.width
+  return resolveMediaWidthPx(item)
+}
+
+function mediaCaption(item: MediaItem): string | undefined {
+  return item.caption
 }
 ---
 
-
-<div class="project-section-row">
-  <div class="project-section-row__text">
-    {title && (
-      titleHref ? (
-        <h2 class="project-section-row__title">
-          <a href={titleHref} class="project-section-row__title-link">{title}</a>
-        </h2>
-      ) : (
-        <h2 class="project-section-row__title">{title}</h2>
-      )
-    )}
-    <div
-      class="project-section-row__body prose dark:prose-invert"
-      set:html={bodyHtml}
-    />
-  </div>
-  <div class="project-section-row__media">
-    {
-      media.map((item) => {
-        const w = resolveMediaWidth(item)
-        if (item.type === 'video') {
-          return (
-            <video
-              src={item.src}
-              autoplay
-              loop
-              muted
-              playsinline
-              class:list={[
-                'project-section-row__asset',
-                'project-section-row__video--ambient',
-                { 'project-section-row__asset--sized': w != null },
-              ]}
-              aria-label={item.alt}
-              width={w}
-              style={mediaSizingStyle(w)}
+<div
+  class:list={[
+    'project-section-row',
+    !showText && 'project-section-row--media-only',
+  ]}
+>
+  {
+    showText && (
+      <div class="project-section-row__text">
+        {
+          sectionTitle &&
+            (titleHref ? (
+              <h2 class="project-section-row__title">
+                <a href={titleHref} class="project-section-row__title-link">
+                  {sectionTitle}
+                </a>
+              </h2>
+            ) : (
+              <h2 class="project-section-row__title">{sectionTitle}</h2>
+            ))
+        }
+        {
+          hasBody && (
+            <div
+              class="project-section-row__body prose dark:prose-invert"
+              set:html={bodyHtml}
             />
           )
         }
-        if (item.type === 'vidstack') {
+      </div>
+    )
+  }
+  <div
+    class:list={[
+      'project-section-row__media',
+      isMediaGrid && 'project-section-row__media--grid',
+    ]}
+    style={
+      isMediaGrid
+        ? `--media-grid-cols: ${mediaGridColumns}`
+        : undefined
+    }
+  >
+    {
+      media.map((item, mediaIndex) => {
+        const mediaType = resolveMediaType(item)
+        const w = isMediaGrid ? undefined : resolveMediaWidth(item)
+        const caption = mediaCaption(item)
+        const isHeroTransition =
+          heroTransitionSlug != null &&
+          mediaIndex === 0 &&
+          mediaType === 'image'
+
+        if (mediaType === 'video') {
           return (
-            <div
-              class:list={[
-                'project-section-row__embed-wrap',
-                'project-section-row__vidstack-wrap',
-                { 'project-section-row__embed-wrap--sized': w != null },
-              ]}
-              style={
-                w != null
-                  ? `max-width:${w}px;width:100%;`
-                  : undefined
-              }
-            >
-              <Media
-                client:only="svelte"
-                viewType="video"
+            <ProjectPhoto caption={caption} maxWidthPx={w}>
+              <video
                 src={item.src}
-                title={item.alt ?? 'Video'}
-                poster={item.poster ?? ''}
-                posterAlt={item.alt ?? ''}
+                autoplay
+                loop
+                muted
+                playsinline
+                preload="auto"
+                class="photoMedia project-section-row__video--ambient"
+                aria-label={item.alt}
+                width={w}
+                style={mediaSizingStyle(w)}
               />
-            </div>
+            </ProjectPhoto>
           )
         }
-        const imgClassList = [
-          'project-section-row__asset',
-          { 'project-section-row__asset--sized': w != null },
-        ]
-        const imgNode = (
+
+        if (mediaType === 'vidstack') {
+          return (
+            <ProjectPhoto caption={caption} maxWidthPx={w}>
+              <div
+                class:list={[
+                  'project-section-row__embed-wrap',
+                  'project-section-row__vidstack-wrap',
+                ]}
+              >
+                <Media
+                  client:only="svelte"
+                  viewType="video"
+                  src={item.src}
+                  title={item.alt ?? 'Video'}
+                  poster={item.poster ?? ''}
+                  posterAlt={item.alt ?? ''}
+                />
+              </div>
+            </ProjectPhoto>
+          )
+        }
+
+        const imgNode = isHeroTransition ? (
+          <img
+            src={item.src}
+            alt={item.alt ?? ''}
+            loading="eager"
+            fetchpriority="high"
+            decoding="async"
+            class="photoMedia project-hero-transition-target"
+            width={w}
+            style={mediaSizingStyle(w)}
+            transition:name={projectHeroTransitionName(heroTransitionSlug!)}
+            transition:animate="initial"
+          />
+        ) : (
           <img
             src={item.src}
             alt={item.alt ?? ''}
             loading="lazy"
-            class:list={imgClassList}
+            class="photoMedia"
             width={w}
             style={mediaSizingStyle(w)}
           />
         )
+
         if (titleHref) {
           return (
-            <a
-              href={titleHref}
-              class:list={[
-                'project-section-row__media-link',
-                { 'project-section-row__media-link--sized': w != null },
-              ]}
-              aria-label={`View project — ${title ?? 'project'}`}
-              data-astro-prefetch="hover"
-            >
-              <span class="project-section-row__media-frame">
-                {imgNode}
-                <span class="project-section-row__media-overlay" aria-hidden="true">
-                  <svg
-                    class="project-section-row__media-arrow"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.75"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+            <ProjectPhoto caption={caption} maxWidthPx={w}>
+              <a
+                href={titleHref}
+                class="project-section-row__media-link"
+                aria-label={`View project — ${sectionTitle ?? 'project'}`}
+                data-astro-prefetch="hover"
+              >
+                <span class="project-section-row__media-frame">
+                  {imgNode}
+                  <span
+                    class="project-section-row__media-overlay"
+                    aria-hidden="true"
                   >
-                    <path d="M5 12h14" />
-                    <path d="m13 6 6 6-6 6" />
-                  </svg>
+                    <svg
+                      class="project-section-row__media-arrow"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    >
+                      <path d="M5 12h14" />
+                      <path d="m13 6 6 6-6 6" />
+                    </svg>
+                  </span>
                 </span>
-              </span>
-            </a>
+              </a>
+            </ProjectPhoto>
           )
         }
-        return imgNode
+
+        return (
+          <ProjectPhoto caption={caption} maxWidthPx={w}>
+            {imgNode}
+          </ProjectPhoto>
+        )
       })
     }
   </div>
@@ -152,21 +218,24 @@ function resolveMediaWidth(item: MediaItem): number | undefined {
 <style>
   .project-section-row {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 2rem;
-    align-items: start;
-    padding: 2rem 0;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: var(--project-section-row-gap, 1.25rem);
+  }
+
+  .project-section-row--media-only {
+    gap: 0;
   }
 
   .project-section-row__text {
-    grid-column: span 4;
-    position: sticky;
-    top: 2rem;
+    width: 100%;
+    max-width: 40rem;
+    margin: 0;
+    text-align: start;
   }
 
   .project-section-row__title {
     margin: 0 0 0.4em;
-    font-size: var(--step-0);
     font-weight: 500;
   }
 
@@ -196,55 +265,53 @@ function resolveMediaWidth(item: MediaItem): number | undefined {
   }
 
   .project-section-row__media {
-    grid-column: span 8;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.5rem;
-  }
-
-  .project-section-row__asset {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    gap: var(--project-section-row-gap, 1.25rem);
     width: 100%;
-    max-width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 0.25rem;
+    max-width: min(var(--project-media-max-width, 960px), 100%);
+    margin: 0;
   }
 
-  /* Explicit width in frontmatter: opt out of flex cross-axis stretch */
-  .project-section-row__asset--sized {
-    align-self: flex-start;
-    flex-shrink: 0;
+  .project-section-row__media--grid {
+    grid-template-columns: repeat(var(--media-grid-cols, 2), minmax(0, 1fr));
+    align-items: center;
+    column-gap: 1rem;
+    row-gap: 1rem;
+  }
+
+  .project-section-row__media--grid :global(.photo) {
+    max-width: none;
+  }
+
+  @media (max-width: 32rem) {
+    .project-section-row__media--grid {
+      grid-template-columns: 1fr;
+    }
   }
 
   .project-section-row__media-link {
     position: relative;
     display: block;
-    max-width: 100%;
-    border-radius: 0.25rem;
     color: #fff;
     outline-offset: 4px;
-  }
-
-  .project-section-row__media-link--sized {
-    align-self: flex-start;
   }
 
   .project-section-row__media-frame {
     position: relative;
     display: block;
     overflow: hidden;
-    border-radius: inherit;
   }
 
-  .project-section-row__media-link .project-section-row__asset {
+  .project-section-row__media-link .photoMedia {
     transition:
       filter 0.28s ease,
       transform 0.35s ease;
   }
 
-  .project-section-row__media-link:hover .project-section-row__asset,
-  .project-section-row__media-link:focus-visible .project-section-row__asset {
+  .project-section-row__media-link:hover .photoMedia,
+  .project-section-row__media-link:focus-visible .photoMedia {
     filter: brightness(0.9);
   }
 
@@ -269,7 +336,8 @@ function resolveMediaWidth(item: MediaItem): number | undefined {
   }
 
   .project-section-row__media-link:hover .project-section-row__media-arrow,
-  .project-section-row__media-link:focus-visible .project-section-row__media-arrow {
+  .project-section-row__media-link:focus-visible
+    .project-section-row__media-arrow {
     opacity: 1;
     transform: translateX(0) scale(1);
   }
@@ -283,15 +351,10 @@ function resolveMediaWidth(item: MediaItem): number | undefined {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .project-section-row__media-link .project-section-row__asset,
+    .project-section-row__media-link .photoMedia,
     .project-section-row__media-arrow {
       transition-duration: 0.01ms;
     }
-  }
-
-  .project-section-row__asset video {
-    width: 100%;
-    height: auto;
   }
 
   .project-section-row__video--ambient {
@@ -302,12 +365,7 @@ function resolveMediaWidth(item: MediaItem): number | undefined {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-    border-radius: 0.25rem;
     overflow: hidden;
-  }
-
-  .project-section-row__embed-wrap--sized {
-    align-self: flex-start;
   }
 
   .project-section-row__vidstack-wrap {
@@ -319,27 +377,5 @@ function resolveMediaWidth(item: MediaItem): number | undefined {
     width: 100%;
     height: 100%;
     min-height: inherit;
-  }
-
-  .project-section-row__embed {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
-
-  @media (max-width: 768px) {
-    .project-section-row {
-      grid-template-columns: 1fr;
-    }
-
-    .project-section-row__text {
-      position: static;
-    }
-
-    .project-section-row__media {
-      order: 2;
-    }
   }
 </style>

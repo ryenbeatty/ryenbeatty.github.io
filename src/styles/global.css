@@ -27,18 +27,43 @@
   /* Light theme – subtly warm */
   --text-color: var(--gray30);
   --meta-color: var(--gray30);
-  --wash-color: #f8f6f1; /* warm cream */
+  /* --wash-color: #f8f6f1; warm cream */
+  --wash-color: #fff;
   --code-wash: var(--gray05);
   --code-color: #2c2825;
-  --site-color: #b85c38; /* warm terracotta */
+  --site-color: #C4D6E4;
+  --site-color-hover: color-mix(in srgb, #C4D6E4 92%, #1a1625);
+  --site-color-on: var(--gray30);
+  --secondary-color: #f74f13;
   --mark-color: rgba(255, 200, 0, 0.15);
   --highlight-color: #f0e4cc; /* light mode text selection – warm, not dark */
-  --hover-color: var(--site-color);
+  --hover-color: var(--site-color-hover);
   /* Grid trail: dot opacity; cross opacity (cross colour = --text-color by default) */
   --grid-trail-dot-opacity: 0.08;
   --grid-trail-mark-opacity: 0.3;
+  --border-color: color-mix(in srgb, var(--text-color) 25%, transparent);
+  --panel-bg: #fff;
+  --panel-border: none;
+  --panel-radius: 4px;
+  --panel-shadow: 0 0 0 1px lch(0% 0 0 / 0.03),
+    0px 3px 6px -2px lch(0% 0 0 / 0.02), 0px 1px 1px lch(0% 0 0 / 0.04);
   --focus-ring: 2px solid var(--site-color);
   --focus-ring-offset: 2px;
+
+  /* Project detail typography (fixed px — not scaled by html fluid root) */
+  --font-size-copy: 18px;
+  --font-size-section-title: 28px;
+  --font-size-caption: 15px;
+
+  /* Project detail layout */
+  --project-media-max-width: 960px;
+  --project-section-gutter: 2.5rem;
+  --project-section-row-gap: 1.25rem;
+  --project-section-inline: 0.5rem;
+
+  /* View transitions (~30% faster than 0.58s / 220ms baselines) */
+  --view-transition-duration: 0.41s;
+  --project-index-nav-fade-duration: 0.15s;
 
   --baseline: 1.6;
   --xxs: 0.2;
@@ -59,7 +84,7 @@
 
   --container-width: 33rem;
   --page-width: calc(var(--container-width) + (var(--baseline) * var(--m) * 2));
-  --content-width: calc(0.25rem + (100vw - var(---page-width)) / 2);
+  --content-width: calc(0.25rem + (100vw - var(--page-width)) / 2);
 
   --breakpoint-narrow: 50em;
   --breakpoint-medium: 64em;
@@ -72,7 +97,7 @@
   --font-caption: var(--font-ui);
 
   color: var(--text-color);
-  font-family: var(--font-serif);
+  font-family: var(--font-body);
   /* Cap 125% (20px) on desktop so body (step--1) stays readable, not ~24px */
   font-size: clamp(100%, 2.5vw, 125%);
   line-height: var(--baseline);
@@ -83,9 +108,8 @@
 }
 
 body {
-  margin: 0 auto;
+  margin: 0;
   width: 100%;
-  max-width: 120ch;
 }
 
 a {
@@ -104,14 +128,17 @@ html {
   --wash-color: #1a1625; /* dusk indigo */
   --code-wash: #252035;
   --code-color: #e8e2d8;
-  --site-color: #d4a574; /* dusk amber / burnt horizon */
+  --site-color: #C4D6E4;
+  --site-color-hover: color-mix(in srgb, #C4D6E4 58%, white);
+  --site-color-on: #1a1625;
   --highlight-color: color-mix(
     in srgb,
     var(--wash-color) 65%,
     white 35%
   ); /* selection: wash, lighter */
-  --hover-color: #e8c9a0;
+  --hover-color: var(--site-color-hover);
   --focus-ring: 2px solid var(--site-color);
+  --border-color: color-mix(in srgb, var(--text-color) 35%, transparent);
   /* Grid trail: dot opacity; cross opacity */
   --grid-trail-dot-opacity: 0.08;
   --grid-trail-mark-opacity: 0.8;
@@ -290,4 +317,123 @@ a {
   text-decoration: underline;
   text-decoration-thickness: 2px;
   text-underline-offset: 3px;
+}
+
+/* Project detail — framed media (figure.photo) */
+.photo {
+  margin: 0;
+  width: 100%;
+}
+
+.photoFrame {
+  overflow: hidden;
+  border-radius: var(--panel-radius);
+  background: var(--panel-bg, #fff);
+}
+
+.photoFrame.hairline {
+  border: 1px solid color-mix(in srgb, var(--text-color) 14%, transparent);
+  box-shadow: var(--panel-shadow);
+}
+
+/* Hero morph: hide destination frame until view transition finishes */
+html:not(.project-hero-morph-done)
+  .photoFrame.hairline:has(.project-hero-transition-target) {
+  border-color: transparent;
+  box-shadow: none;
+  background: transparent;
+}
+
+html.project-hero-morph-done .photoFrame.hairline:has(.project-hero-transition-target) {
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.photoMedia {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+.mediaCaption {
+  margin: 0.65rem 0 0;
+  font-family: var(--font-caption, var(--font-ui));
+  font-size: var(--font-size-caption);
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--meta-color, var(--text-color));
+  text-align: center;
+  text-wrap: balance;
+}
+
+.project-page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  padding-bottom: 60px;
+}
+
+.project-page .photo {
+  width: 100%;
+  max-width: min(var(--project-media-max-width, 960px), 100%);
+}
+
+.project-sections {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: var(--project-section-gutter);
+  width: 100%;
+  min-width: 0;
+  padding-inline: var(--project-section-inline);
+}
+
+.project-section-row__title {
+  font-size: var(--font-size-section-title);
+  line-height: 1.2;
+}
+
+.project-section-row__body {
+  font-size: var(--font-size-copy);
+  line-height: 1.55;
+}
+
+.project-section-row__body p {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+#outpost-transition-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: none !important;
+}
+
+.outpost-transition-target {
+  opacity: 1;
+  transition: none !important;
+}
+
+/* View transitions — project tile → detail hero morph */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-group(*) {
+    animation-duration: var(--view-transition-duration, 0.41s);
+    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    mix-blend-mode: normal;
+    animation-duration: var(--view-transition-duration, 0.41s);
+  }
+
+  ::view-transition-image-pair(*) {
+    isolation: isolate;
+  }
 }

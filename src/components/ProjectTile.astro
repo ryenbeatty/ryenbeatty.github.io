@@ -1,0 +1,291 @@
+---
+import { ChevronRight } from '@lucide/astro'
+import { sitePath } from '../utils/site'
+import { projectHeroTransitionName } from '../utils/view-transitions'
+
+interface Props {
+  title: string
+  slug: string
+  description: string
+  thumbnail?: string
+  height: 'short' | 'regular' | 'tall'
+}
+
+const { title, slug, thumbnail, height, description } = Astro.props
+const href = sitePath(`work/${slug}`)
+---
+
+<article class="project-tile" data-height={height}>
+  <a
+    href={href}
+    class="project-tile__link"
+    data-astro-prefetch="hover"
+    aria-label={`View ${title}`}
+  >
+    <div class="project-tile__media">
+      {
+        thumbnail ? (
+          <img
+            src={thumbnail}
+            alt=""
+            class="project-tile__image project-tile__hero-transition"
+            loading="lazy"
+            decoding="async"
+            transition:name={projectHeroTransitionName(slug)}
+            transition:animate="initial"
+          />
+        ) : (
+          <div class="project-tile__placeholder" aria-hidden="true" />
+        )
+      }
+      <div class="project-tile__overlay" aria-hidden="true"></div>
+      <div class="project-tile__actions">
+        <span class="project-tile__label">{description}</span>
+        <span class="project-tile__icon-btn" aria-hidden="true">
+          <ChevronRight size={16} stroke-width={2} />
+        </span>
+      </div>
+    </div>
+    <div class="project-tile__body">
+      <!-- <h2 class="project-tile__title">{title}</h2> -->
+      <!-- <p class="project-tile__description">{description}</p> -->
+    </div>
+  </a>
+</article>
+
+<style>
+  .project-tile {
+    --tile-body-space: 5.5rem;
+    --tile-overlay-duration: 0.2s;
+    --tile-actions-duration: 0.18s;
+    --tile-actions-delay: 0.04s;
+    --tile-ease: cubic-bezier(0.42, 0, 0.58, 1);
+    --tile-overlay-gradient-bottom: rgb(255 255 255 / 1);
+    --tile-overlay-gradient-top: rgb(255 255 255 / 0);
+    --tile-overlay-gradient-fade-end: 40%;
+    --tile-overlay-blur: 10px;
+    --tile-ring: color-mix(in srgb, var(--text-color) 6%, transparent);
+    --tile-ring-hover: color-mix(in srgb, var(--text-color) 16%, transparent);
+    --tile-radius: var(--panel-radius, 4px);
+    --tile-radius-hover: 10px;
+    --tile-radius-duration: 0.14s;
+    --tile-radius-ease: cubic-bezier(0.2, 0, 0, 1);
+    height: 100%;
+    min-height: var(--tile-min-height, 20rem);
+  }
+
+  .project-tile[data-height='short'] {
+    --tile-min-height: 14rem;
+    --tile-body-space: 4.5rem;
+  }
+
+  .project-tile[data-height='regular'] {
+    --tile-min-height: 20rem;
+    --tile-body-space: 5.5rem;
+  }
+
+  .project-tile[data-height='tall'] {
+    --tile-min-height: 28rem;
+    --tile-body-space: 6rem;
+  }
+
+  .project-tile__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: inherit;
+    color: inherit;
+    text-decoration: none;
+    border-radius: var(--tile-radius);
+    overflow: hidden;
+    border: var(--panel-border);
+    background: var(--panel-bg, #fff);
+    box-shadow:
+      0 0 0 1px var(--tile-ring),
+      0px 3px 6px -2px lch(0% 0 0 / 0.02),
+      0px 1px 1px lch(0% 0 0 / 0.04);
+    outline-offset: 4px;
+    transition:
+      box-shadow var(--tile-overlay-duration) var(--tile-ease),
+      border-radius var(--tile-radius-duration) var(--tile-radius-ease);
+  }
+
+  @media (hover: hover) {
+    .project-tile__link:hover {
+      border-radius: var(--tile-radius-hover);
+      box-shadow:
+        0 0 0 1px var(--tile-ring-hover),
+        0px 3px 6px -2px lch(0% 0 0 / 0.02),
+        0px 1px 1px lch(0% 0 0 / 0.04);
+    }
+  }
+
+  .project-tile__link:focus-visible {
+    border-radius: var(--tile-radius-hover);
+    box-shadow:
+      0 0 0 1px var(--tile-ring-hover),
+      0px 3px 6px -2px lch(0% 0 0 / 0.02),
+      0px 1px 1px lch(0% 0 0 / 0.04);
+    outline: 2px solid var(--site-color);
+  }
+
+  .project-tile__link:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  .project-tile__media {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: calc(var(--tile-min-height) - var(--tile-body-space));
+    overflow: hidden;
+    background: var(--wash-color);
+  }
+
+  .project-tile__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .project-tile__placeholder {
+    width: 100%;
+    height: 100%;
+    background: color-mix(in srgb, var(--text-color) 8%, transparent);
+  }
+
+  .project-tile__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+      to top,
+      var(--tile-overlay-gradient-bottom) 0%,
+      var(--tile-overlay-gradient-top) var(--tile-overlay-gradient-fade-end)
+    );
+    -webkit-backdrop-filter: blur(var(--tile-overlay-blur));
+    backdrop-filter: blur(var(--tile-overlay-blur));
+    -webkit-mask-image: linear-gradient(
+      to top,
+      #000 0%,
+      transparent var(--tile-overlay-gradient-fade-end)
+    );
+    mask-image: linear-gradient(
+      to top,
+      #000 0%,
+      transparent var(--tile-overlay-gradient-fade-end)
+    );
+    opacity: 0;
+    transition: opacity var(--tile-overlay-duration) var(--tile-ease);
+  }
+
+  .project-tile__actions {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.85rem;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding-inline: 0.75rem;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(0.35rem);
+    transition:
+      opacity var(--tile-actions-duration) var(--tile-ease) 0s,
+      transform var(--tile-actions-duration) var(--tile-ease) 0s;
+  }
+
+  @media (hover: hover) {
+    .project-tile__link:hover .project-tile__overlay {
+      opacity: 1;
+    }
+
+    .project-tile__link:hover .project-tile__actions {
+      opacity: 1;
+      transform: translateY(0);
+      transition-delay: var(--tile-actions-delay), var(--tile-actions-delay);
+    }
+  }
+
+  .project-tile__link:focus-visible .project-tile__overlay {
+    opacity: 1;
+  }
+
+  .project-tile__link:focus-visible .project-tile__actions {
+    opacity: 1;
+    transform: translateY(0);
+    transition-delay: var(--tile-actions-delay), var(--tile-actions-delay);
+  }
+
+  .project-tile__label {
+    max-width: 100%;
+    padding: 0.4rem 0.75rem;
+    border-radius: 999px;
+    background: var(--wash-color);
+    box-shadow: var(--panel-shadow);
+    color: var(--gray35, #1a1625);
+    font-size: var(--step--2);
+    font-weight: 500;
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .project-tile__icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    background: var(--wash-color);
+    box-shadow: var(--panel-shadow);
+    color: var(--gray35, #1a1625);
+  }
+
+  .project-tile__body {
+    flex: 0 0 auto;
+    padding: 0.85rem 1rem 1rem;
+  }
+
+  .project-tile__title {
+    margin: 0 0 0.35rem;
+    font-size: var(--step-0);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .project-tile__description {
+    margin: 0;
+    font-size: var(--step--2);
+    line-height: 1.4;
+    color: var(--meta-color, var(--text-color));
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+
+  .project-tile[data-height='short'] .project-tile__description {
+    -webkit-line-clamp: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-tile__overlay {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      transition: none;
+    }
+
+    .project-tile__actions {
+      transition: none;
+    }
+  }
+</style>

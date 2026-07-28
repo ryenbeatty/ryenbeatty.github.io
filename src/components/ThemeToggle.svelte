@@ -1,25 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { getColorTheme, setColorTheme, type ColorTheme } from '../lib/theme'
 
-  let theme: 'light' | 'dark' = 'light'
-
-  function setTheme(value: 'light' | 'dark') {
-    theme = value
-    document.documentElement.setAttribute('data-theme', value)
-    localStorage.setItem('theme', value)
-  }
+  let theme: ColorTheme = 'light'
 
   onMount(() => {
-    const saved = localStorage.getItem('theme')
-    if (saved === 'dark' || saved === 'light') {
-      setTheme(saved)
-    } else {
-      setTheme('light')
-    }
+    theme = getColorTheme()
   })
 
   function toggle() {
-    setTheme(theme === 'dark' ? 'light' : 'dark')
+    const next = theme === 'dark' ? 'light' : 'dark'
+    theme = next
+    setColorTheme(next)
   }
 </script>
 

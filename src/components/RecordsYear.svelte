@@ -1,6 +1,5 @@
 <script>
   import { getData } from 'services/lastfm'
-  import { Image } from 'astro:assets'
 
   const METHOD = 'user.getTopAlbums'
 
@@ -9,10 +8,6 @@
   }
 
   let data = fetchData(METHOD)
-
-  function logMessage() {
-    console.log('Custom log message', data)
-  }
 </script>
 <div class="grid grid-cols-4 gap-4">
   {#await data}

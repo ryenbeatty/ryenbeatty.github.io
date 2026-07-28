@@ -1,6 +1,4 @@
 ---
-import { ViewTransitions } from 'astro:transitions'
-
 interface Props {
   password: string
   storageKey?: string // unique key for localStorage (e.g. slug); defaults to 'default'
@@ -17,7 +15,7 @@ const authKey = `project-auth-${storageKey}`
 
 <div id="password-form" class="password-screen">
   <div class="password-container">
-    <h1>Protected Content</h1>
+    <h1>{title}</h1>
     <form id="auth-form">
       <input
         type="password"
@@ -31,7 +29,7 @@ const authKey = `project-auth-${storageKey}`
   </div>
 </div>
 
-<script define:vars={{ password, authKey }}>
+<script is:inline define:vars={{ password, authKey }}>
   // Check if already authenticated for this key
   const isAuthenticated = () => {
     return localStorage.getItem(authKey) === 'true'

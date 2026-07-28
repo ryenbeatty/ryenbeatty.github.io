@@ -3,12 +3,14 @@ import clsx from 'clsx'
 
 interface Props {
   href?: string
-  variant?: 'primary' | 'secondary' | 'ghost'
-  size?: 'sm' | 'md'
+  variant?: 'primary' | 'secondary' | 'tertiary' | 'ghost' | 'icon'
+  size?: 'sm' | 'md' | 'xxxxxl'
   type?: 'button' | 'submit' | 'reset'
   class?: string
   target?: string
   rel?: string
+  emojiOnHover?: string
+  shouldAnimateIcon?: boolean
 }
 
 const {
@@ -19,10 +21,23 @@ const {
   class: className,
   target,
   rel,
+  emojiOnHover,
+  shouldAnimateIcon = false,
   ...rest
 } = Astro.props
 
-const classes = clsx('btn', `btn--${variant}`, `btn--${size}`, className)
+const springEmojiIcon = Boolean(emojiOnHover && shouldAnimateIcon)
+
+const classes = clsx(
+  'select-none shadow-sm btn',
+  `btn--${variant}`,
+  `btn--${size}`,
+  emojiOnHover && 'btn--emoji-hover',
+  springEmojiIcon && 'btn--emoji-spring',
+  className,
+)
+
+const flipClass = clsx('btn__flip', springEmojiIcon && 'btn__flip--spring')
 
 const isExternal =
   href != null && (target === '_blank' || /^https?:\/\//.test(href))
@@ -32,11 +47,49 @@ const linkRel = rel ?? (isExternal ? 'noopener noreferrer' : undefined)
 {
   href ? (
     <a href={href} class={classes} target={target} rel={linkRel} {...rest}>
-      <slot />
+      {emojiOnHover ? (
+        <span class={flipClass}>
+          <span class="btn__flip-label">
+            <slot />
+          </span>
+          {springEmojiIcon ? (
+            <span class="btn__flip-track" aria-hidden="true">
+              <span class="btn__flip-emoji">
+                <span class="btn__flip-emoji-float">{emojiOnHover}</span>
+              </span>
+            </span>
+          ) : (
+            <span class="btn__flip-emoji" aria-hidden="true">
+              {emojiOnHover}
+            </span>
+          )}
+        </span>
+      ) : (
+        <slot />
+      )}
     </a>
   ) : (
     <button type={type} class={classes} {...rest}>
-      <slot />
+      {emojiOnHover ? (
+        <span class={flipClass}>
+          <span class="btn__flip-label">
+            <slot />
+          </span>
+          {springEmojiIcon ? (
+            <span class="btn__flip-track" aria-hidden="true">
+              <span class="btn__flip-emoji">
+                <span class="btn__flip-emoji-float">{emojiOnHover}</span>
+              </span>
+            </span>
+          ) : (
+            <span class="btn__flip-emoji" aria-hidden="true">
+              {emojiOnHover}
+            </span>
+          )}
+        </span>
+      ) : (
+        <slot />
+      )}
     </button>
   )
 }
@@ -56,9 +109,277 @@ const linkRel = rel ?? (isExternal ? 'noopener noreferrer' : undefined)
     cursor: pointer;
     transition:
       background-color 0.2s ease,
-      border-color 0.2s ease,
-      color 0.2s ease,
-      opacity 0.2s ease;
+      transform 0.15s ease;
+  }
+
+  .btn:not(.btn--ghost):not(.btn--icon) {
+    width: 100%;
+  }
+
+  .btn:active:not(:disabled):not([aria-disabled='true']) {
+    transform: scale(0.97);
+  }
+
+  .btn--emoji-hover {
+    --btn-flipbook-duration: 0.1s;
+    --btn-flipbook-delay: 0.02s;
+    --btn-flipbook-return: 0.07s;
+  }
+
+  .btn__flip {
+    display: inline-grid;
+    place-items: center;
+    perspective: 420px;
+    transform-style: preserve-3d;
+  }
+
+  .btn__flip-label,
+  .btn__flip-emoji {
+    grid-area: 1 / 1;
+    backface-visibility: hidden;
+    transform-origin: 50% 100%;
+    transform-style: preserve-3d;
+  }
+
+  .btn__flip-label {
+    opacity: 1;
+    transform: rotateX(0deg) scaleY(1);
+    transition:
+      transform var(--btn-flipbook-return) cubic-bezier(0.33, 1, 0.68, 1),
+      opacity calc(var(--btn-flipbook-return) * 0.85) ease;
+  }
+
+  .btn__flip-emoji {
+    opacity: 0;
+    pointer-events: none;
+    transform: rotateX(94deg) scaleY(0.25);
+    font-size: 1.2em;
+    line-height: 1;
+    transition:
+      transform var(--btn-flipbook-return) cubic-bezier(0.33, 1, 0.68, 1),
+      opacity calc(var(--btn-flipbook-return) * 0.85) ease;
+  }
+
+  @keyframes btn-flipbook-label-out {
+    0% {
+      transform: rotateX(0deg) scaleY(1);
+      opacity: 1;
+    }
+
+    18% {
+      transform: rotateX(-24deg) scaleY(0.92);
+      opacity: 1;
+    }
+
+    36% {
+      transform: rotateX(-48deg) scaleY(0.76);
+      opacity: 0.92;
+    }
+
+    54% {
+      transform: rotateX(-68deg) scaleY(0.52);
+      opacity: 0.65;
+    }
+
+    72% {
+      transform: rotateX(-84deg) scaleY(0.28);
+      opacity: 0.3;
+    }
+
+    100% {
+      transform: rotateX(-94deg) scaleY(0.06);
+      opacity: 0;
+    }
+  }
+
+  @keyframes btn-flipbook-emoji-in {
+    0% {
+      transform: rotateX(94deg) scaleY(0.2);
+      opacity: 0;
+    }
+
+    20% {
+      transform: rotateX(72deg) scaleY(0.38);
+      opacity: 0.35;
+    }
+
+    40% {
+      transform: rotateX(48deg) scaleY(0.62);
+      opacity: 0.72;
+    }
+
+    60% {
+      transform: rotateX(26deg) scaleY(0.84);
+      opacity: 0.95;
+    }
+
+    82% {
+      transform: rotateX(-8deg) scaleY(1.05);
+      opacity: 1;
+    }
+
+    100% {
+      transform: rotateX(0deg) scaleY(1);
+      opacity: 1;
+    }
+  }
+
+  @media (hover: hover) {
+    .btn--emoji-hover:not(.btn--emoji-spring):is(:hover, :focus-visible)
+      .btn__flip-label {
+      animation: btn-flipbook-label-out var(--btn-flipbook-duration)
+        steps(6, jump-end) forwards;
+      transition: none;
+    }
+
+    .btn--emoji-hover:not(.btn--emoji-spring):is(:hover, :focus-visible)
+      .btn__flip-emoji {
+      animation: btn-flipbook-emoji-in var(--btn-flipbook-duration)
+        steps(6, jump-end) var(--btn-flipbook-delay) forwards;
+      transition: none;
+    }
+  }
+
+  @media (hover: none) {
+    .btn--emoji-hover:not(.btn--emoji-spring):focus-visible .btn__flip-label {
+      animation: btn-flipbook-label-out var(--btn-flipbook-duration)
+        steps(6, jump-end) forwards;
+      transition: none;
+    }
+
+    .btn--emoji-hover:not(.btn--emoji-spring):focus-visible .btn__flip-emoji {
+      animation: btn-flipbook-emoji-in var(--btn-flipbook-duration)
+        steps(6, jump-end) var(--btn-flipbook-delay) forwards;
+      transition: none;
+    }
+  }
+
+  .btn--emoji-spring {
+    --btn-spring-emoji-run: 2.35s;
+    --btn-spring-emoji-delay: 0.02s;
+    --btn-spring-ease: cubic-bezier(0.12, 1.42, 0.22, 1);
+    --btn-spring-return: 0.25s;
+    --btn-spring-emoji-gutter: 0.55em;
+    --btn-spring-emoji-hover-cycle: 1.4s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn--emoji-spring .btn__flip--spring {
+    display: block;
+    width: 100%;
+    position: relative;
+    min-height: 1.25em;
+    perspective: none;
+    transform-style: flat;
+  }
+
+  .btn--emoji-spring .btn__flip-track {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: calc(-1 * var(--btn-spring-emoji-gutter));
+    overflow: visible;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .btn--emoji-spring .btn__flip-label {
+    display: block;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 0;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .btn--emoji-spring .btn__flip-track .btn__flip-emoji {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    opacity: 0;
+    transform: translate(0, -50%);
+    backface-visibility: visible;
+    transform-origin: center left;
+    transition: opacity var(--btn-spring-return) ease;
+  }
+
+  .btn--emoji-spring .btn__flip-emoji-float {
+    display: inline-block;
+    line-height: 1;
+    transform-origin: center center;
+  }
+
+  @keyframes btn-spring-emoji-dash {
+    0% {
+      left: 0;
+      transform: translate(0, -50%);
+      opacity: 0;
+    }
+
+    6% {
+      opacity: 1;
+    }
+
+    100% {
+      left: calc(100% - var(--btn-spring-emoji-gutter));
+      transform: translate(-100%, -50%);
+      opacity: 1;
+    }
+  }
+
+  @keyframes btn-spring-emoji-hover {
+    0%,
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+
+    20% {
+      transform: translateY(-0.07em) rotate(-2.5deg);
+    }
+
+    45% {
+      transform: translateY(0.04em) rotate(1.5deg);
+    }
+
+    70% {
+      transform: translateY(-0.05em) rotate(-1.5deg);
+    }
+  }
+
+  @media (hover: hover) {
+    .btn--emoji-spring:is(:hover, :focus-visible)
+      .btn__flip-track
+      .btn__flip-emoji {
+      animation: btn-spring-emoji-dash var(--btn-spring-emoji-run)
+        var(--btn-spring-ease) var(--btn-spring-emoji-delay) forwards;
+    }
+
+    .btn--emoji-spring:is(:hover, :focus-visible) .btn__flip-emoji-float {
+      animation: btn-spring-emoji-hover var(--btn-spring-emoji-hover-cycle)
+        ease-in-out infinite;
+      animation-delay: calc(
+        var(--btn-spring-emoji-delay) + var(--btn-spring-emoji-run)
+      );
+    }
+  }
+
+  @media (hover: none) {
+    .btn--emoji-spring:focus-visible .btn__flip-track .btn__flip-emoji {
+      animation: btn-spring-emoji-dash var(--btn-spring-emoji-run)
+        var(--btn-spring-ease) var(--btn-spring-emoji-delay) forwards;
+    }
+
+    .btn--emoji-spring:focus-visible .btn__flip-emoji-float {
+      animation: btn-spring-emoji-hover var(--btn-spring-emoji-hover-cycle)
+        ease-in-out infinite;
+      animation-delay: calc(
+        var(--btn-spring-emoji-delay) + var(--btn-spring-emoji-run)
+      );
+    }
   }
 
   .btn--md {
@@ -66,41 +387,126 @@ const linkRel = rel ?? (isExternal ? 'noopener noreferrer' : undefined)
     font-size: var(--step--1);
   }
 
+  .btn--xxxxxl {
+    padding: 0.45em 0.9em;
+    font-size: var(--step-6);
+    font-weight: 500;
+  }
+
   .btn--sm {
     padding: 0.4em 0.85em;
     font-size: var(--step--2);
   }
 
+  .btn--emoji-spring.btn--sm {
+    padding-inline-end: calc(0.85em + var(--btn-spring-emoji-gutter));
+  }
+
+  .btn--emoji-spring.btn--md {
+    padding-inline-end: calc(1.1em + var(--btn-spring-emoji-gutter));
+  }
+
+  .btn--emoji-spring.btn--xxxxxl {
+    padding-inline-end: calc(0.9em + var(--btn-spring-emoji-gutter));
+  }
+
   .btn--primary {
     background-color: var(--site-color);
-    color: var(--wash-color);
+    color: var(--site-color-on, var(--text-color));
     border-color: var(--site-color);
+    transition:
+      background-color 0.22s cubic-bezier(0.33, 1, 0.68, 1),
+      border-color 0.22s cubic-bezier(0.33, 1, 0.68, 1),
+      color 0.22s cubic-bezier(0.33, 1, 0.68, 1);
   }
 
   .btn--primary:hover {
-    opacity: 0.92;
+    background-color: var(--site-color-hover, var(--hover-color));
+    border-color: var(--site-color-hover, var(--hover-color));
+    color: var(--site-color-on, var(--text-color));
   }
 
   .btn--secondary {
-    background-color: transparent;
-    color: var(--text-color);
-    border-color: var(--gray20);
+    background-color: var(--secondary-color);
+    color: white;
+    border-color: var(--secondary-color);
   }
 
   .btn--secondary:hover {
-    border-color: var(--site-color);
-    color: var(--site-color);
+    color: white;
+    border-color: color-mix(in srgb, var(--secondary-color) 90%, #000);
+  }
+
+  .btn--tertiary {
+    background-color: var(--gray05);
+    color: var(--text-color);
+    border-color: transparent;
+  }
+
+  .btn--tertiary:hover {
+    background: var(--gray10);
   }
 
   .btn--ghost {
+    width: fit-content;
+    max-width: max-content;
+    flex: 0 0 auto;
+    align-self: center;
     background-color: transparent;
     color: var(--text-color);
     border-color: transparent;
     padding-inline: 0.35em;
+    box-shadow: none;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.15s ease;
   }
 
-  .btn--ghost:hover {
-    color: var(--site-color);
+  .btn--ghost:hover,
+  .btn--ghost:focus-visible {
+    color: var(--text-color);
+    border-color: color-mix(in srgb, var(--text-color) 18%, transparent);
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--text-color) 5%, transparent);
+  }
+
+  .btn--icon {
+    width: auto;
+    flex-shrink: 0;
+    border-radius: 9999px;
+    aspect-ratio: 1;
+    padding: 0;
+    background-color: var(--gray05);
+    color: var(--text-color);
+    border-color: transparent;
+  }
+
+  .btn--icon:hover {
+    background: var(--gray10);
+  }
+
+  .btn--icon.btn--sm {
+    width: 2rem;
+    height: 2rem;
+    font-size: var(--step--2);
+  }
+
+  .btn--icon.btn--md {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: var(--step--1);
+  }
+
+  .btn--icon.btn--xxxxxl {
+    width: 3.25rem;
+    height: 3.25rem;
+    font-size: var(--step-2);
+  }
+
+  .btn--icon :global(svg) {
+    width: 1.15em;
+    height: 1.15em;
+    flex-shrink: 0;
   }
 
   .btn:disabled,
@@ -108,5 +514,60 @@ const linkRel = rel ?? (isExternal ? 'noopener noreferrer' : undefined)
     opacity: 0.45;
     cursor: not-allowed;
     pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn:active:not(:disabled):not([aria-disabled='true']) {
+      transform: none;
+    }
+
+    .btn__flip-label,
+    .btn__flip-emoji,
+    .btn__flip-emoji-float {
+      animation: none !important;
+      transition:
+        opacity 0.15s ease,
+        transform 0.01ms;
+    }
+
+    @media (hover: hover) {
+      .btn--emoji-hover:not(.btn--emoji-spring):is(:hover, :focus-visible)
+        .btn__flip-label {
+        opacity: 0;
+        transform: none;
+      }
+
+      .btn--emoji-hover:not(.btn--emoji-spring):is(:hover, :focus-visible)
+        .btn__flip-emoji {
+        opacity: 1;
+        transform: none;
+      }
+
+      .btn--emoji-spring:is(:hover, :focus-visible)
+        .btn__flip-track
+        .btn__flip-emoji {
+        opacity: 1;
+        left: calc(100% - var(--btn-spring-emoji-gutter));
+        transform: translate(-100%, -50%);
+      }
+    }
+
+    @media (hover: none) {
+      .btn--emoji-hover:not(.btn--emoji-spring):focus-visible .btn__flip-label {
+        opacity: 0;
+        transform: none;
+      }
+
+      .btn--emoji-hover:not(.btn--emoji-spring):focus-visible .btn__flip-emoji {
+        opacity: 1;
+        transform: none;
+      }
+
+      .btn--emoji-spring:focus-visible .btn__flip-track .btn__flip-emoji {
+        opacity: 1;
+        left: calc(100% - var(--btn-spring-emoji-gutter));
+        transform: translate(-100%, -50%);
+      }
+    }
   }
 </style>

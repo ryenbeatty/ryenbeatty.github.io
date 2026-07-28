@@ -1,4 +1,8 @@
 import { defineCollection, z } from 'astro:content'
+import {
+  modeVisibilitySchema,
+  outpostPanelConfigSchema,
+} from '../schemas/project-outpost'
 
 // Writing
 const article = defineCollection({
@@ -16,17 +20,18 @@ const article = defineCollection({
 // Projects — order for homepage; sections = sticky text blocks + media (left/right layout)
 const projectSectionMedia = z.object({
   src: z.string(), // image/video: path or URL; vidstack: video URL for Media/VideoLayout player
-  type: z.enum(['image', 'video', 'vidstack']),
+  type: z.enum(['image', 'video', 'vidstack']), // .mp4/.webm/.mov infer as video when type is image
   alt: z.string().optional(),
+  caption: z.string().optional(),
   poster: z.string().optional(), // optional poster image URL (e.g. for vidstack)
-  /** Pixel width (images/videos); prefer this if `width` does not survive your content pipeline */
-  maxWidthPx: z.coerce.number().positive().optional(),
-  /** Alias of maxWidthPx; may be stripped by stale Astro content cache if schema changed — restart dev / rm .astro */
+  /** Max display width in CSS pixels (images, videos, embeds). */
   width: z.coerce.number().positive().optional(),
+  /** Same as `width` (either field may be used). */
+  maxWidthPx: z.coerce.number().positive().optional(),
 })
 const projectSection = z.object({
   title: z.string().optional(), // optional heading rendered above a section's body
-  text: z.string(), // markdown, rendered on homepage
+  text: z.string().optional().default(''), // markdown body; omit or leave blank for media-only sections
   media: z.array(projectSectionMedia),
 })
 const project = defineCollection({
@@ -41,7 +46,13 @@ const project = defineCollection({
     'header-background': z.string().optional(),
     'hero-image': z.string().optional(),
     thumbnail: z.string().optional(), // image path for next-project nav tab
+    /** Default section media width (px) when a media item omits `width`. */
+    mediaMaxWidth: z.coerce.number().positive().optional(),
+    outpostPanel: outpostPanelConfigSchema.optional(),
+    visibleIn: modeVisibilitySchema.optional(),
     sections: z.array(projectSection).optional(), // [{ title?, text, media }, ...]
+    /** When true, omitted from production builds and the project index. Visible in dev. */
+    draft: z.boolean().default(false),
   }),
 })
 

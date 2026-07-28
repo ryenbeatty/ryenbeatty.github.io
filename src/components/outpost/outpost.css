@@ -1,0 +1,164 @@
+.outpost {
+  --outpost-bg: #07080a;
+  --outpost-panel: #0c0f12;
+  --outpost-accent: #9a1111;
+  --outpost-green: #39ff14;
+  --outpost-muted: #93a1a1;
+  --outpost-glass: rgba(255, 255, 255, 0.02);
+  --outpost-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+  --outpost-border: 1px solid rgba(255, 255, 255, 0.03);
+
+  box-sizing: border-box;
+  font-family: var(
+    --font-mono,
+    ui-monospace,
+    'SFMono-Regular',
+    Menlo,
+    Monaco,
+    monospace
+  );
+  color: var(--outpost-green);
+}
+
+.outpost *,
+.outpost *::before,
+.outpost *::after {
+  box-sizing: border-box;
+}
+
+.outpost__panel {
+  background: var(--outpost-panel);
+  border: var(--outpost-border);
+  border-radius: 10px;
+  box-shadow: var(--outpost-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.outpost__panel-header {
+  color: var(--outpost-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 8px 10px 0;
+  text-transform: uppercase;
+}
+
+.outpost__panel-body {
+  padding: 8px 10px 10px;
+}
+
+.outpost__button {
+  background: #0b0e10;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  border-radius: 6px;
+  color: var(--outpost-green);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 6px 8px;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.outpost__button:hover {
+  border-color: rgba(57, 255, 20, 0.35);
+  box-shadow: 0 0 8px rgba(57, 255, 20, 0.15);
+}
+
+.outpost__button:focus-visible {
+  outline: 2px solid var(--outpost-green);
+  outline-offset: 2px;
+}
+
+.outpost__readout {
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.2), transparent);
+  border-radius: 6px;
+  color: var(--outpost-muted);
+  font-size: 13px;
+  padding: 8px;
+}
+
+.outpost__readout strong {
+  color: var(--outpost-green);
+  font-weight: 700;
+}
+
+.outpost__console {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.outpost__topbar {
+  align-items: center;
+  background: var(--outpost-panel);
+  border: var(--outpost-border);
+  border-radius: 8px;
+  box-shadow: var(--outpost-shadow);
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 12px;
+}
+
+.outpost__title {
+  font-weight: 600;
+  letter-spacing: 0.6px;
+}
+
+.outpost__badge {
+  background: var(--outpost-accent);
+  border-radius: 4px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  margin-right: 8px;
+  padding: 6px 8px;
+}
+
+.outpost__status {
+  color: var(--outpost-muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 13px;
+  gap: 18px;
+}
+
+.outpost__status strong {
+  color: var(--outpost-green);
+}
+
+.outpost__grid {
+  align-items: start;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+}
+
+.outpost__column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.outpost__footer {
+  color: var(--outpost-muted);
+  display: flex;
+  font-size: 12px;
+  justify-content: space-between;
+  padding: 6px 12px;
+}
+
+@media (max-width: 1000px) {
+  .outpost__grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,17 +1,15 @@
 ---
-import NextProjectNav from 'components/NextProjectNav.astro'
-import ProjectHero from 'components/ProjectHero.astro'
-import ProjectSectionRow from 'components/ProjectSectionRow.astro'
-import Layout from 'layouts/Primary.astro'
+import ProjectPageContent from 'components/ProjectPageContent.astro'
+import Layout from 'layouts/Base.astro'
 import ProtectedLayout from 'layouts/Protected.astro'
 
 import type { CollectionEntry } from 'astro:content'
-import { getCollection } from 'astro:content'
 import { renderMarkdown } from '../../utils/markdown'
-import { sitePath } from '../../utils/site'
+import { withResolvedMediaWidths } from '../../utils/project-media'
+import { getProjectEntries } from '../../utils/project-data'
 
 export async function getStaticPaths() {
-  const content = await getCollection('project')
+  const content = await getProjectEntries()
   return content.map((entry) => ({
     params: { slug: entry.slug },
     props: { entry },
@@ -19,7 +17,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props
-const allProjects = await getCollection('project')
+const allProjects = await getProjectEntries()
 const sorted = [...allProjects].sort(
   (a: CollectionEntry<'project'>, b: CollectionEntry<'project'>) => {
     const orderA = a.data.order ?? 999
@@ -31,107 +29,61 @@ const sorted = [...allProjects].sort(
 const currentIndex = sorted.findIndex((p) => p.slug === entry.slug)
 const nextProject =
   currentIndex >= 0 && currentIndex < sorted.length - 1
-    ? sorted[currentIndex + 1]
+    ? {
+        slug: sorted[currentIndex + 1].slug,
+        title: sorted[currentIndex + 1].data.title,
+        thumbnail: sorted[currentIndex + 1].data.thumbnail,
+      }
     : null
-const prevProject = currentIndex > 0 ? sorted[currentIndex - 1] : null
+const prevProject =
+  currentIndex > 0
+    ? {
+        slug: sorted[currentIndex - 1].slug,
+        title: sorted[currentIndex - 1].data.title,
+        thumbnail: sorted[currentIndex - 1].data.thumbnail,
+      }
+    : null
 const sections = entry.data.sections ?? []
+type ProjectSection = NonNullable<
+  CollectionEntry<'project'>['data']['sections']
+>[number]
 const sectionRows = await Promise.all(
-  sections.map(async (sec) => ({
+  sections.map(async (sec: ProjectSection) => ({
     title: sec.title,
-    bodyHtml:
-      typeof sec.text === 'string'
-        ? ((await renderMarkdown(sec.text)) as string)
-        : String(sec.text),
-    media: sec.media,
+    bodyHtml: sec.text?.trim()
+      ? ((await renderMarkdown(sec.text)) as string)
+      : '',
+    media: withResolvedMediaWidths(
+      sec.media,
+      entry.data.mediaMaxWidth,
+    ),
   })),
 )
-interface SectionRowProps {
-  title?: string
-  bodyHtml: string
-  media: {
-    src: string
-    type: 'image' | 'video' | 'vidstack'
-    alt?: string
-    poster?: string
-    width?: number
-    maxWidthPx?: number
-  }[]
-}
-const typedSectionRows: SectionRowProps[] = sectionRows
 
 const pageTitle = `${entry.data.title} - Ryen Beatty - Design engineer`
 const frontmatter = { ...entry.data, title: pageTitle }
+
+const pageContentProps = {
+  slug: entry.slug,
+  thumbnail: entry.data.thumbnail,
+  description: entry.data.description,
+  heroImage: entry.data['hero-image'],
+  sectionRows,
+  nextProject,
+  prevProject,
+}
 ---
 
 {
   entry.data.password ? (
     <ProtectedLayout password={entry.data.password} storageKey={entry.slug}>
       <Layout frontmatter={frontmatter}>
-        <ProjectHero
-          description={entry.data.description}
-          headerBackground={entry.data['header-background']}
-          heroImage={entry.data['hero-image']}
-        />
-
-        <div class="project-sections">
-          {typedSectionRows.map((row) => (
-            <ProjectSectionRow
-              title={row.title}
-              bodyHtml={row.bodyHtml}
-              media={row.media}
-            />
-          ))}
-        </div>
-
-        {nextProject ? (
-          <NextProjectNav
-            href={sitePath(`work/${nextProject.slug}`)}
-            title={nextProject.data.title}
-            thumbnail={nextProject.data.thumbnail}
-            side="right"
-          />
-        ) : prevProject ? (
-          <NextProjectNav
-            href={sitePath(`work/${prevProject.slug}`)}
-            title={prevProject.data.title}
-            thumbnail={prevProject.data.thumbnail}
-            side="left"
-          />
-        ) : null}
+        <ProjectPageContent {...pageContentProps} />
       </Layout>
     </ProtectedLayout>
   ) : (
     <Layout frontmatter={frontmatter}>
-      <ProjectHero
-        description={entry.data.description}
-        headerBackground={entry.data['header-background']}
-        heroImage={entry.data['hero-image']}
-      />
-
-      <div class="project-sections">
-        {typedSectionRows.map((row) => (
-          <ProjectSectionRow
-            title={row.title}
-            bodyHtml={row.bodyHtml}
-            media={row.media}
-          />
-        ))}
-      </div>
-      {nextProject ? (
-        <NextProjectNav
-          href={sitePath(`work/${nextProject.slug}`)}
-          title={nextProject.data.title}
-          thumbnail={nextProject.data.thumbnail}
-          side="right"
-        />
-      ) : prevProject ? (
-        <NextProjectNav
-          href={sitePath(`work/${prevProject.slug}`)}
-          title={prevProject.data.title}
-          thumbnail={prevProject.data.thumbnail}
-          side="left"
-        />
-      ) : null}
+      <ProjectPageContent {...pageContentProps} />
     </Layout>
   )
 }

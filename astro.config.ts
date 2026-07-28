@@ -1,4 +1,5 @@
 import mdx from '@astrojs/mdx';
+import react from '@astrojs/react';
 import remarkBreaks from 'remark-breaks';
 import sitemap from '@astrojs/sitemap';
 import svelte from '@astrojs/svelte';
@@ -14,6 +15,7 @@ export default defineConfig({
   base: '/',
   prefetch: true,
   integrations: [
+    react(),
     svelte(),
     mdx({
       remarkPlugins: [remarkBreaks],
