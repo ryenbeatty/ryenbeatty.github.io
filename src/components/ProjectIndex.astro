@@ -201,9 +201,12 @@ const layoutRows = sourceRows.map((row) => {
       </p>
     </div>
     <div class="project-index__cta-side">
-      <pre class="project-index__cta-turtle" aria-hidden="true">{TURTLE_ART}</pre>
+      <pre
+        class="project-index__cta-turtle"
+        aria-hidden="true">{TURTLE_ART}</pre>
       <Button
-        href="mailto:hello@ryenbeatty.com"
+        href="https://linkedin.com/in/ryen-beatty"
+        target="_blank"
         size="xxxxxl"
         class="project-index__cta-button"
       >
@@ -327,7 +330,8 @@ const layoutRows = sourceRows.map((row) => {
     transition: none;
   }
 
-  .project-index--hero-nav :global(.project-tile--nav-active .project-tile__link) {
+  .project-index--hero-nav
+    :global(.project-tile--nav-active .project-tile__link) {
     border: none;
     box-shadow: none;
     background: transparent;
@@ -336,7 +340,8 @@ const layoutRows = sourceRows.map((row) => {
     transition: none;
   }
 
-  .project-index--hero-nav :global(.project-tile--nav-active .project-tile__media) {
+  .project-index--hero-nav
+    :global(.project-tile--nav-active .project-tile__media) {
     overflow: hidden;
     border-radius: inherit;
   }
