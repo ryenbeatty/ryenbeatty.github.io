@@ -23,9 +23,8 @@ export const projectIndexConfig = projectIndexSchema.parse({
     },
     {
       tiles: [
-        { project: 'scout', width: 'half', height: 'regular' },
         { project: 'researchgate', width: 'half', height: 'regular' },
-        // { project: 'scout', width: 'third', height: 'regular' },
+        { project: 'scout', width: 'half', height: 'regular' },
       ],
     },
     // {
