@@ -6,6 +6,7 @@ import ProtectedLayout from 'layouts/Protected.astro'
 import type { CollectionEntry } from 'astro:content'
 import { renderMarkdown } from '../../utils/markdown'
 import { withResolvedMediaWidths } from '../../utils/project-media'
+import { resolveModeVisibility } from '../../schemas/project-outpost'
 import { getProjectEntries } from '../../utils/project-data'
 
 export async function getStaticPaths() {
@@ -18,7 +19,12 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props
 const allProjects = await getProjectEntries()
-const sorted = [...allProjects].sort(
+const sorted = [...allProjects]
+  .filter((project) => {
+    const visibility = resolveModeVisibility(undefined, project.data.visibleIn)
+    return visibility.default || visibility.outpost
+  })
+  .sort(
   (a: CollectionEntry<'project'>, b: CollectionEntry<'project'>) => {
     const orderA = a.data.order ?? 999
     const orderB = b.data.order ?? 999
