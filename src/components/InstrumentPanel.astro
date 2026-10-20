@@ -40,6 +40,7 @@ import Button from './Button.astro'
       <Button
         variant="primary"
         size="sm"
+        class="btn--message"
         target="_blank"
         href="https://www.linkedin.com/in/ryen-beatty/"
         emojiOnHover={'🛸'}
@@ -114,7 +115,7 @@ import Button from './Button.astro'
 
     .instrument-panel__social {
       display: flex;
-      flex-flow: row wrap;
+      flex-flow: row nowrap;
       gap: 0.25rem;
       width: 100%;
     }
@@ -124,9 +125,24 @@ import Button from './Button.astro'
       min-height: 44px;
     }
 
+    .instrument-panel__actions :global(.btn.btn--message) {
+      background-color: #1a1a1a;
+      border-color: #1a1a1a;
+      color: #fff;
+    }
+
+    .instrument-panel__actions :global(.btn.btn--message:hover) {
+      background-color: #2a2a2a;
+      border-color: #2a2a2a;
+      color: #fff;
+    }
+
     .instrument-panel__social :global(.btn) {
       width: auto;
-      flex: 1 1 5.5rem;
+      flex: 1 1 0;
+      min-width: 0;
+      padding-inline: 0.4em;
+      white-space: nowrap;
     }
 
     @media (max-width: 960px) {
