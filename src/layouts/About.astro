@@ -1,7 +1,6 @@
 ---
 import type { ImageMetadata } from 'astro'
 import { Image } from 'astro:assets'
-import Header from 'components/Header.astro'
 import Base from './Base.astro'
 
 const { frontmatter } = Astro.props
@@ -17,7 +16,6 @@ const imageModule =
 ---
 
 <Base frontmatter={frontmatter}>
-  <Header />
   <div class="about-layout">
     <aside class="about-layout__media" aria-hidden={!image}>
       {image?.src && (
@@ -94,7 +92,17 @@ const imageModule =
     margin-top: 1.35rem;
   }
 
-  @media (max-width: 768px) {
+  @container page (max-width: 600px) {
+    .about-layout {
+      grid-template-columns: 1fr;
+    }
+
+    .about-layout__media {
+      position: static;
+    }
+  }
+
+  @media (max-width: 960px) {
     .about-layout {
       grid-template-columns: 1fr;
     }

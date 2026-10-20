@@ -431,12 +431,13 @@ const layoutRows = sourceRows.map((row) => {
     line-height: 1;
     letter-spacing: 0;
     white-space: pre;
+    max-width: 100%;
+    overflow: hidden;
     color: var(--cta-text);
     opacity: 0.62;
     transform: scale(1);
     transform-origin: top right;
     pointer-events: none;
-    overflow: visible;
   }
 
   .project-index__cta :global(.project-index__cta-button) {
@@ -453,7 +454,7 @@ const layoutRows = sourceRows.map((row) => {
     opacity: 0.9;
   }
 
-  @media (max-width: 768px) {
+  @container page (max-width: 600px) {
     .project-index__row {
       grid-template-columns: 1fr;
       gap: 8px;
@@ -473,11 +474,47 @@ const layoutRows = sourceRows.map((row) => {
     }
 
     .project-index__cta-turtle {
+      font-size: 10px;
       transform-origin: top left;
     }
 
     .project-index__cta :global(.project-index__cta-button) {
       align-self: flex-end;
+    }
+  }
+
+  @media (max-width: 960px) {
+    .project-index__row {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    .project-index__cell[data-span] {
+      grid-column: span 1;
+    }
+
+    .project-index__cta {
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+
+    .project-index__cta-side {
+      align-items: flex-start;
+    }
+
+    .project-index__cta-turtle {
+      font-size: 10px;
+      transform-origin: top left;
+    }
+
+    .project-index__cta :global(.project-index__cta-button) {
+      align-self: flex-end;
+    }
+  }
+
+  @media (hover: none) {
+    .project-index__cell :global(.project-tile__body) {
+      padding: 0.75rem 0.25rem 0;
     }
   }
 </style>

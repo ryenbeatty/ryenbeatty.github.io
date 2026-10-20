@@ -285,7 +285,13 @@ function mediaCaption(item: MediaItem): string | undefined {
     max-width: none;
   }
 
-  @media (max-width: 32rem) {
+  @container page (max-width: 600px) {
+    .project-section-row__media--grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 960px) {
     .project-section-row__media--grid {
       grid-template-columns: 1fr;
     }

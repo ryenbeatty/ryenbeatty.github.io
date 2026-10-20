@@ -239,14 +239,22 @@ h3 {
   line-height: 165%;
 }
 
+@container page (max-width: 600px) {
+  .article-body > p:first-of-type {
+    font-size: 1.35rem;
+  }
+}
+
 .article-body > p:nth-of-type(2) {
   margin-top: 2em;
 }
 
 .article-body {
   max-width: 43em;
+  min-width: 0;
   margin-left: auto;
   margin-right: auto;
+  overflow-wrap: break-word;
 
   blockquote,
   blockquote p:first-of-type {

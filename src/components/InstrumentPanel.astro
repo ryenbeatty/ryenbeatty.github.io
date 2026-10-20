@@ -15,7 +15,7 @@ import Button from './Button.astro'
     </h1>
 
     <div class="instrument-panel__actions">
-      <div class="instrument-panel__social flex flex-row gap-1 w-full">
+      <div class="instrument-panel__social">
         <Button
           variant="tertiary"
           size="sm"
@@ -60,7 +60,7 @@ import Button from './Button.astro'
       width: 100%;
       height: calc(100dvh - var(--instrument-panel-inset, 32px));
       max-height: calc(100dvh - var(--instrument-panel-inset, 32px));
-      min-width: 350px;
+      min-width: 0;
       display: flex;
       flex-direction: column;
       align-items: flex-start;
@@ -112,9 +112,55 @@ import Button from './Button.astro'
       width: 100%;
     }
 
+    .instrument-panel__social {
+      display: flex;
+      flex-flow: row wrap;
+      gap: 0.25rem;
+      width: 100%;
+    }
+
+    .instrument-panel__social :global(.btn),
+    .instrument-panel__actions > :global(.btn) {
+      min-height: 44px;
+    }
+
+    .instrument-panel__social :global(.btn) {
+      width: auto;
+      flex: 1 1 5.5rem;
+    }
+
+    @media (max-width: 960px) {
+      .instrument-panel {
+        position: static;
+        height: fit-content;
+        max-height: none;
+        min-height: 0;
+        overflow: visible;
+      }
+
+      .instrument-panel__body {
+        flex: 0 0 auto;
+        flex-direction: column;
+        align-items: stretch;
+        height: auto;
+        max-height: none;
+        overflow: visible;
+        gap: 0.75rem;
+      }
+
+      .instrument-panel__title {
+        margin-bottom: 0;
+      }
+
+      .instrument-panel__actions {
+        width: 100%;
+        min-width: 0;
+      }
+    }
+
     .instrument-panel__title {
       margin: 0 0 1rem 0;
-      font-size: var(--step-1);
+      font-size: var(--step-2);
       font-weight: 500;
       display: flex;
       flex-direction: column;

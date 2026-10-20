@@ -22,6 +22,7 @@ const href = sitePath(`work/${slug}`)
     data-astro-prefetch="hover"
     aria-label={`View ${title}`}
   >
+    <p class="project-tile__caption">{description}</p>
     <div class="project-tile__media">
       {
         thumbnail ? (
@@ -47,8 +48,7 @@ const href = sitePath(`work/${slug}`)
       </div>
     </div>
     <div class="project-tile__body">
-      <!-- <h2 class="project-tile__title">{title}</h2> -->
-      <!-- <p class="project-tile__description">{description}</p> -->
+      <p class="project-tile__description">{description}</p>
     </div>
   </a>
 </article>
@@ -250,9 +250,37 @@ const href = sitePath(`work/${slug}`)
     color: var(--gray35, #1a1625);
   }
 
+  .project-tile__caption {
+    display: none;
+    margin: 0;
+  }
+
   .project-tile__body {
     flex: 0 0 auto;
     padding: 0.85rem 1rem 1rem;
+  }
+
+  @media (max-width: 960px) {
+    .project-tile__caption {
+      display: block;
+      flex-shrink: 0;
+      margin: 0.85rem 0.85rem 0.65rem;
+      font-size: 1.125rem;
+      font-weight: 400;
+      line-height: 1.35;
+      color: inherit;
+    }
+
+    .project-tile__body,
+    .project-tile__actions {
+      display: none;
+    }
+  }
+
+  @media (hover: hover) {
+    .project-tile__body {
+      display: none;
+    }
   }
 
   .project-tile__title {

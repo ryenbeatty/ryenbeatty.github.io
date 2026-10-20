@@ -24,14 +24,12 @@ const sorted = [...allProjects]
     const visibility = resolveModeVisibility(undefined, project.data.visibleIn)
     return visibility.default || visibility.outpost
   })
-  .sort(
-  (a: CollectionEntry<'project'>, b: CollectionEntry<'project'>) => {
+  .sort((a: CollectionEntry<'project'>, b: CollectionEntry<'project'>) => {
     const orderA = a.data.order ?? 999
     const orderB = b.data.order ?? 999
     if (orderA !== orderB) return orderA - orderB
     return b.data.date.getTime() - a.data.date.getTime()
-  },
-)
+  })
 const currentIndex = sorted.findIndex((p) => p.slug === entry.slug)
 const nextProject =
   currentIndex >= 0 && currentIndex < sorted.length - 1

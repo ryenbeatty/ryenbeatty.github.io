@@ -213,6 +213,7 @@ export function WeatherRadar({
           border-radius: 8px;
           box-shadow: inset 0 0 30px rgba(57, 255, 20, 0.02);
           display: block;
+          width: 100%;
           height: auto;
           max-width: 100%;
         }
@@ -239,11 +240,6 @@ export function WeatherRadar({
           pointer-events: auto;
         }
 
-        @media (max-width: 1000px) {
-          .outpost-radar__canvas {
-            width: 100%;
-          }
-        }
       `}</style>
     </OutpostPanel>
   )

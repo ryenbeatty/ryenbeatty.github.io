@@ -42,7 +42,7 @@ const pageContentFade = fade({ duration: '0.13s' })
     <style>
       .app-layout {
         display: grid;
-        grid-template-columns: 350px minmax(0, 1fr);
+        grid-template-columns: minmax(256px, 352px) minmax(0, 1fr);
         align-items: start;
         gap: 16px;
         --layout-padding: 16px;
@@ -52,11 +52,21 @@ const pageContentFade = fade({ duration: '0.13s' })
         min-height: 100vh;
         min-height: 100dvh;
         box-sizing: border-box;
+        overflow-x: clip;
       }
 
       .page-shell {
         min-width: 0;
         width: 100%;
+        container-name: page;
+        container-type: inline-size;
+      }
+
+      @media (max-width: 960px) {
+        .app-layout {
+          grid-template-columns: minmax(0, 1fr);
+          grid-template-rows: auto minmax(0, 1fr);
+        }
       }
     </style>
     <script>

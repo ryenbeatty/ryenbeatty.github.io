@@ -139,7 +139,7 @@
   align-items: start;
   display: grid;
   gap: 14px;
-  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
 }
 
 .outpost__column {
@@ -157,7 +157,13 @@
   padding: 6px 12px;
 }
 
-@media (max-width: 1000px) {
+@container page (max-width: 600px) {
+  .outpost__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 960px) {
   .outpost__grid {
     grid-template-columns: 1fr;
   }
