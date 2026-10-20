@@ -17,13 +17,13 @@ export const projectIndexConfig = projectIndexSchema.parse({
     },
     {
       tiles: [
-        { project: 'scout', width: 'half', height: 'regular' },
+        { project: 'kato', width: 'half', height: 'regular', visibleIn: { default: true, outpost: false }, outpost: { type: 'video', url: 'https://www.youtube.com/watch?v=29XymHesxa0&t=2s' } },
         { project: 'outbound', width: 'half', height: 'regular', visibleIn: { default: true, outpost: false }, outpost: { type: 'video', url: 'https://www.youtube.com/watch?v=29XymHesxa0&t=2s' } },
       ],
     },
     {
       tiles: [
-        { project: 'kato', width: 'half', height: 'regular', visibleIn: { default: true, outpost: false }, outpost: { type: 'video', url: 'https://www.youtube.com/watch?v=29XymHesxa0&t=2s' } },
+        { project: 'scout', width: 'half', height: 'regular' },
         { project: 'researchgate', width: 'half', height: 'regular' },
         // { project: 'scout', width: 'third', height: 'regular' },
       ],
